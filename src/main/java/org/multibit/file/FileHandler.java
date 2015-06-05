@@ -207,7 +207,8 @@ public class FileHandler {
                     
                     // Make sure the version type in the info file matches what was actually loaded.
                     // (A backup with a different encryption type might have been used).
-                    walletInfo.setWalletVersion(wallet.getVersion());
+                    // TODO: Fix this
+                    //walletInfo.setWalletVersion(wallet.getVersion());
                 }
 
                 // Ensure that the directories for the backups of the private
@@ -215,7 +216,8 @@ public class FileHandler {
                 BackupManager.INSTANCE.createBackupDirectories(walletFile);
 
                 // Add the new wallet into the model.
-                wallet.setNetworkParameters(bitcoinController.getModel().getNetworkParameters());
+                // Now part of the serialized format
+                // wallet.setNetworkParameters(bitcoinController.getModel().getNetworkParameters());
 
                 perWalletModelData = bitcoinController.getModel().addWallet(this.bitcoinController, wallet,
                         walletFilenameToUseInModel);

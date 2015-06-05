@@ -35,7 +35,6 @@ import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.bitcoin.WalletInfoData;
 import org.multibit.store.MultiBitWalletVersion;
-import org.spongycastle.crypto.params.KeyParameter;
 import org.spongycastle.util.Arrays;
 
 import org.bitcoinj.core.ECKey;

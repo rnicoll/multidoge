@@ -605,7 +605,8 @@ public class MultiBitService {
     sendRequest.fee = Coin.ZERO;
     sendRequest.feePerKb = BitcoinModel.SEND_FEE_PER_KB_DEFAULT;
 
-    sendRequest.tx.getConfidence().addEventListener(perWalletModelData.getWallet().getTxConfidenceListener());
+    // This now happens when committing the TX
+    // sendRequest.tx.getConfidence().addEventListener(perWalletModelData.getWallet().getTxConfidenceListener());
 
     try {
       // The transaction is already added to the wallet (in SendBitcoinConfirmAction) so here we just need

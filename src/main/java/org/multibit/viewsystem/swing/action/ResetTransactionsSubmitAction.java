@@ -73,35 +73,35 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
 
         WalletData activePerWalletModelData = super.bitcoinController.getModel().getActivePerWalletModelData();
 
-            // Work out the earliest transaction date and save it to the wallet.
-            Date earliestTransactionDate = new Date(DateUtils.nowUtc().getMillis());
-            Set<Transaction> allTransactions = activePerWalletModelData.getWallet().getTransactions(true);
-            if (allTransactions != null) {
-                for (Transaction transaction : allTransactions) {
-                    if (transaction != null) {
-                        Date updateTime = transaction.getUpdateTime();
-                        if (updateTime != null && earliestTransactionDate.after(updateTime)) {
-                            earliestTransactionDate = updateTime;
-                        }
+        // Work out the earliest transaction date and save it to the wallet.
+        Date earliestTransactionDate = new Date(DateUtils.nowUtc().getMillis());
+        Set<Transaction> allTransactions = activePerWalletModelData.getWallet().getTransactions(true);
+        if (allTransactions != null) {
+            for (Transaction transaction : allTransactions) {
+                if (transaction != null) {
+                    Date updateTime = transaction.getUpdateTime();
+                    if (updateTime != null && earliestTransactionDate.after(updateTime)) {
+                        earliestTransactionDate = updateTime;
                     }
                 }
             }
-            Date actualResetDate = earliestTransactionDate;
+        }
+        Date actualResetDate = earliestTransactionDate;
 
-            // Look at the earliest key creation time - this is
-            // returned in seconds and is converted to milliseconds.
-            long earliestKeyCreationTime = activePerWalletModelData.getWallet().getEarliestKeyCreationTime()
-                    * NUMBER_OF_MILLISECOND_IN_A_SECOND;
-            if (earliestKeyCreationTime != 0 && earliestKeyCreationTime < earliestTransactionDate.getTime()) {
-                earliestTransactionDate = new Date(earliestKeyCreationTime);
-                actualResetDate = earliestTransactionDate;
-            }
-
+        // Look at the earliest key creation time - this is
+        // returned in seconds and is converted to milliseconds.
+        long earliestKeyCreationTime = activePerWalletModelData.getWallet().getEarliestKeyCreationTime()
+                * NUMBER_OF_MILLISECOND_IN_A_SECOND;
+        if (earliestKeyCreationTime != 0 && earliestKeyCreationTime < earliestTransactionDate.getTime()) {
+            earliestTransactionDate = new Date(earliestKeyCreationTime);
+            actualResetDate = earliestTransactionDate;
+        }
         // Take an extra day off the reset date to ensure the wallet is cleared entirely
         actualResetDate = new Date (actualResetDate.getTime() - 3600 * 24 * NUMBER_OF_MILLISECOND_IN_A_SECOND);  // Number of milliseconds in a day
 
         // Remove the transactions from the wallet.
-        activePerWalletModelData.getWallet().clearTransactions(actualResetDate);
+        // TODO: Work out the equivalient block
+        // activePerWalletModelData.getWallet().clearTransactions(actualResetDate);
 
         // Save the wallet without the transactions.
         try {

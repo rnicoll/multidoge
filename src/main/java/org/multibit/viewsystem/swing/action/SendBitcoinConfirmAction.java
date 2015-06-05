@@ -86,7 +86,7 @@ public class SendBitcoinConfirmAction extends MultiBitSubmitAction {
                 Address sendAddressObject;
 
                 sendAddressObject = new Address(bitcoinController.getModel().getNetworkParameters(), sendAddress);
-                SendRequest sendRequest = SendRequest.to(sendAddressObject, Utils.toNanoCoins(sendAmount));
+                SendRequest sendRequest = SendRequest.to(sendAddressObject, Coin.parseCoin(sendAmount));
                 sendRequest.ensureMinRequiredFee = true;
                 sendRequest.fee = Coin.ZERO;
                 sendRequest.feePerKb = BitcoinModel.SEND_FEE_PER_KB_DEFAULT;

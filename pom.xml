@@ -61,12 +61,6 @@
             <snapshots/>
             <url>https://oss.sonatype.org/content/groups/public</url>
         </repository>
-        <!-- dogecoin-j repo -->
-        <repository>
-            <id>bitcoinj-release</id>
-            <releases />
-            <url>http://distribution.bitcoinj.googlecode.com/git/releases</url>
-        </repository>
         <!-- zxing repo -->
         <repository>
             <id>mvn-adamgent</id>
@@ -775,11 +769,6 @@
         <groupId>com.googlecode.jcsv</groupId>
             <artifactId>jcsv</artifactId>
             <version>1.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bitcoinj</groupId>
-            <artifactId>bitcoinj-core</artifactId>
-            <version>0.13-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.altcoinj</groupId>
