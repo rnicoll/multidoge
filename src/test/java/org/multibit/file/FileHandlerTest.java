@@ -16,12 +16,12 @@
 package org.multibit.file;
 
 
-import com.google.dogecoin.core.ECKey;
-import com.google.dogecoin.core.NetworkParameters;
-import com.google.dogecoin.core.Utils;
-import com.google.dogecoin.core.Wallet;
-import com.google.dogecoin.crypto.KeyCrypter;
-import com.google.dogecoin.crypto.KeyCrypterScrypt;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.core.Wallet;
+import org.bitcoinj.crypto.KeyCrypter;
+import org.bitcoinj.crypto.KeyCrypterScrypt;
 import com.google.protobuf.ByteString;
 import org.bitcoinj.wallet.Protos;
 import org.bitcoinj.wallet.Protos.ScryptParameters;
@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import static junit.framework.Assert.*;
+import org.bitcoinj.wallet.KeyChainGroup;
 
 public class FileHandlerTest {
 
@@ -93,11 +94,11 @@ public class FileHandlerTest {
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
         // Create a new unencrypted (vanilla) protobuf wallet.
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet());
+        Wallet newWallet = new Wallet(org.altcoinj.params.DogecoinMainNetParams.get());
         ECKey newKey = new ECKey();
-        newWallet.getKeychain().add(newKey);
+        newWallet.getImportedKeys().add(newKey);
         newKey = new ECKey();
-        newWallet.getKeychain().add(newKey);
+        newWallet.getImportedKeys().add(newKey);
         WalletData perWalletModelData = new WalletData();
         WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, newWallet, MultiBitWalletVersion.PROTOBUF);
         
@@ -128,7 +129,7 @@ public class FileHandlerTest {
         assertNotNull(perWalletModelDataReborn);
         assertEquals(BigInteger.ZERO, perWalletModelDataReborn.getWallet().getBalance());
         assertEquals(TEST_CREATE_UNENCRYPTED_PROTOBUF_PREFIX, perWalletModelDataReborn.getWalletDescription());
-        assertEquals(2, perWalletModelDataReborn.getWallet().getKeychain().size());
+        assertEquals(2, perWalletModelDataReborn.getWallet().getImportedKeys().size());
 
         assertEquals(MultiBitWalletVersion.PROTOBUF, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
         assertTrue("Wallet is not UNENCRYPTED when it should be", perWalletModelDataReborn.getWallet().getEncryptionType() == EncryptionType.UNENCRYPTED);
@@ -145,8 +146,11 @@ public class FileHandlerTest {
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
         KeyCrypterScrypt initialKeyCrypter = new KeyCrypterScrypt();
+        NetworkParameters params = org.altcoinj.params.DogecoinMainNetParams.get();
+        KeyChainGroup testChainGroup = new KeyChainGroup(params);
+        testChainGroup.encrypt(initialKeyCrypter, initialKeyCrypter.deriveKey(WALLET_PASSWORD));
         System.out.println("InitialKeyCrypter = " + initialKeyCrypter);
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), initialKeyCrypter);
+        Wallet newWallet = new Wallet(org.altcoinj.params.DogecoinMainNetParams.get(), testChainGroup);
         assertEquals(MultiBitWalletVersion.PROTOBUF_ENCRYPTED, newWallet.getVersion());
         
         ECKey newKey = new ECKey();
@@ -154,7 +158,7 @@ public class FileHandlerTest {
         // Copy the private key bytes for checking later.
         byte[] originalPrivateKeyBytes1 = new byte[32];
         System.arraycopy(newKey.getPrivKeyBytes(), 0, originalPrivateKeyBytes1, 0, 32);
-        System.out.println("EncryptableECKeyTest - Original private key 1 = " + Utils.bytesToHexString(originalPrivateKeyBytes1));
+        System.out.println("EncryptableECKeyTest - Original private key 1 = " + Utils.HEX.encode(originalPrivateKeyBytes1));
  
         newKey = newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
         newWallet.addKey(newKey);
@@ -163,7 +167,7 @@ public class FileHandlerTest {
  
         byte[] originalPrivateKeyBytes2 = new byte[32];
         System.arraycopy(newKey.getPrivKeyBytes(), 0, originalPrivateKeyBytes2, 0, 32);
-        System.out.println("EncryptableECKeyTest - Original private key 2 = " + Utils.bytesToHexString(originalPrivateKeyBytes2));
+        System.out.println("EncryptableECKeyTest - Original private key 2 = " + Utils.HEX.encode(originalPrivateKeyBytes2));
 
         newKey = newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
         newWallet.addKey(newKey);
@@ -181,7 +185,7 @@ public class FileHandlerTest {
         assertTrue("Wallet is not ENCRYPTED when it should be", perWalletModelData.getWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
 
         // Get the keys of the wallet and check that all the keys are encrypted.
-        Collection<ECKey> keys = newWallet.getKeychain();
+        Collection<ECKey> keys = newWallet.getImportedKeys();
         for (ECKey key : keys) {
             assertTrue("Key is not encrypted when it should be", key.isEncrypted());
         }
@@ -203,13 +207,13 @@ public class FileHandlerTest {
         assertNotNull(perWalletModelDataReborn);
         assertEquals(BigInteger.ZERO, perWalletModelDataReborn.getWallet().getBalance());
         assertEquals(TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX, perWalletModelDataReborn.getWalletDescription());
-        assertEquals(2, perWalletModelDataReborn.getWallet().getKeychain().size());
+        assertEquals(2, perWalletModelDataReborn.getWallet().getImportedKeys().size());
 
         assertEquals(MultiBitWalletVersion.PROTOBUF_ENCRYPTED, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
         assertTrue("Wallet is not of type ENCRYPTED when it should be", perWalletModelDataReborn.getWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
      
         // Get the keys out the reborn wallet and check that all the keys are encrypted.
-        Collection<ECKey> rebornEncryptedKeys = perWalletModelDataReborn.getWallet().getKeychain();
+        Collection<ECKey> rebornEncryptedKeys = perWalletModelDataReborn.getWallet().getImportedKeys();
         for (ECKey key : rebornEncryptedKeys) {
             assertTrue("Key is not encrypted when it should be", key.isEncrypted());
         }
@@ -220,7 +224,7 @@ public class FileHandlerTest {
         perWalletModelDataReborn.getWallet().decrypt(perWalletModelDataReborn.getWallet().getKeyCrypter().deriveKey(WALLET_PASSWORD));
 
         // Get the keys out the reborn wallet and check that all the keys match.
-        Collection<ECKey> rebornKeys = perWalletModelDataReborn.getWallet().getKeychain();
+        Collection<ECKey> rebornKeys = perWalletModelDataReborn.getWallet().getImportedKeys();
         
         assertEquals("Wrong number of keys in reborn wallet", 2, rebornKeys.size());
         
@@ -229,7 +233,7 @@ public class FileHandlerTest {
         assertTrue("firstRebornKey should now de decrypted but is not", !firstRebornKey.isEncrypted());
         // The reborn unencrypted private key bytes should match the original private key.
         byte[] firstRebornPrivateKeyBytes = firstRebornKey.getPrivKeyBytes();
-        System.out.println("FileHandlerTest - Reborn decrypted first private key = " + Utils.bytesToHexString(firstRebornPrivateKeyBytes));
+        System.out.println("FileHandlerTest - Reborn decrypted first private key = " + Utils.HEX.encode(firstRebornPrivateKeyBytes));
 
         for (int i = 0; i < firstRebornPrivateKeyBytes.length; i++) {
             assertEquals("Byte " + i + " of the reborn first private key did not match the original", originalPrivateKeyBytes1[i], firstRebornPrivateKeyBytes[i]);
@@ -239,7 +243,7 @@ public class FileHandlerTest {
         assertTrue("secondRebornKey should now de decrypted but is not", !secondRebornKey.isEncrypted());
         // The reborn unencrypted private key bytes should match the original private key.
         byte[] secondRebornPrivateKeyBytes = secondRebornKey.getPrivKeyBytes();
-        System.out.println("FileHandlerTest - Reborn decrypted second private key = " + Utils.bytesToHexString(secondRebornPrivateKeyBytes));
+        System.out.println("FileHandlerTest - Reborn decrypted second private key = " + Utils.HEX.encode(secondRebornPrivateKeyBytes));
 
         for (int i = 0; i < secondRebornPrivateKeyBytes.length; i++) {
             assertEquals("Byte " + i + " of the reborn second private key did not match the original", originalPrivateKeyBytes2[i], secondRebornPrivateKeyBytes[i]);
@@ -256,9 +260,12 @@ public class FileHandlerTest {
 
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
+        NetworkParameters params = org.altcoinj.params.DogecoinMainNetParams.get();
+        KeyChainGroup testChainGroup = new KeyChainGroup(params);
         KeyCrypter testKeyCrypter = new KeyCrypterScrypt();
+        testChainGroup.encrypt(testKeyCrypter, testKeyCrypter.deriveKey(WALLET_PASSWORD));
         
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), testKeyCrypter);
+        Wallet newWallet = new Wallet(params, testChainGroup);
         ECKey newKey = new ECKey();
         newKey = newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
         newWallet.addKey(newKey);
@@ -309,18 +316,21 @@ public class FileHandlerTest {
         .setSalt(ByteString.copyFrom(salt)).setN(n).setR(r).setP(p);
         ScryptParameters scryptParameters = scryptParametersBuilder.build();
 
+        NetworkParameters params = org.altcoinj.params.DogecoinMainNetParams.get();
+        KeyChainGroup testChainGroup = new KeyChainGroup(params);
         KeyCrypter testKeyCrypter = new KeyCrypterScrypt(scryptParameters);
-        
+        testChainGroup.encrypt(testKeyCrypter, testKeyCrypter.deriveKey(WALLET_PASSWORD));
+
         // Create an encrypted wallet with nondefault scrypt parameters.
         File temporaryWallet = File.createTempFile(TEST_SCRYPT_PARAMETERS + "2", ".wallet");
         temporaryWallet.deleteOnExit();
 
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), testKeyCrypter);
+        Wallet newWallet = new Wallet(params, testChainGroup);
         ECKey newKey = new ECKey();
         newKey = newKey.encrypt(newWallet.getKeyCrypter(), newWallet.getKeyCrypter().deriveKey(WALLET_PASSWORD));
-        newWallet.addKey(newKey);
+        newWallet.importKey(newKey);
         
         WalletData perWalletModelData = new WalletData();
         WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, newWallet, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
@@ -375,11 +385,11 @@ public class FileHandlerTest {
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
         // Create a new protobuf wallet with a future wallet version
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet());
+        Wallet newWallet = new Wallet(org.altcoinj.params.DogecoinMainNetParams.get());
         ECKey newKey = new ECKey();
-        newWallet.getKeychain().add(newKey);
+        newWallet.getImportedKeys().add(newKey);
         newKey = new ECKey();
-        newWallet.getKeychain().add(newKey);
+        newWallet.getImportedKeys().add(newKey);
         WalletData perWalletModelData = new WalletData();
         WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, newWallet, MultiBitWalletVersion.FUTURE);
         
@@ -425,11 +435,11 @@ public class FileHandlerTest {
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
         // Create a new protobuf wallet.
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet());
+        Wallet newWallet = new Wallet(org.altcoinj.params.DogecoinMainNetParams.get());
         ECKey newKey = new ECKey();
-        newWallet.getKeychain().add(newKey);
+        newWallet.getImportedKeys().add(newKey);
         newKey = new ECKey();
-        newWallet.getKeychain().add(newKey);
+        newWallet.getImportedKeys().add(newKey);
         WalletData perWalletModelData = new WalletData();
         WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, newWallet, MultiBitWalletVersion.PROTOBUF);
         
@@ -462,11 +472,11 @@ public class FileHandlerTest {
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
         // Create a new protobuf wallet.
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet());
+        Wallet newWallet = new Wallet(org.altcoinj.params.DogecoinMainNetParams.get());
         ECKey newKey = new ECKey();
-        newWallet.getKeychain().add(newKey);
+        newWallet.getImportedKeys().add(newKey);
         newKey = new ECKey();
-        newWallet.getKeychain().add(newKey);
+        newWallet.getImportedKeys().add(newKey);
         WalletData perWalletModelData = new WalletData();
         // The wallet info incorrectly states it is encrypted but the wallet is not encrypted.
         WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, newWallet, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);

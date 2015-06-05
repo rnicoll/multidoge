@@ -38,6 +38,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import org.bitcoinj.core.Coin;
 
 public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
 
@@ -439,7 +440,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements Viewable {
     if (Boolean.TRUE.toString().equalsIgnoreCase(performPasteNow)) {
       try {
         Address decodeAddress = new Address(this.bitcoinController.getModel().getNetworkParameters(), address);
-        processDecodedString(org.bitcoinj.uri.BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amountNotLocalised), label, null), null);
+        processDecodedString(org.bitcoinj.uri.BitcoinURI.convertToBitcoinURI(decodeAddress, Coin.parseCoin(amountNotLocalised), label, null), null);
         this.bitcoinController.getModel().setActiveWalletPreference(BitcoinModel.SEND_PERFORM_PASTE_NOW, "false");
         sendButton.requestFocusInWindow();
 

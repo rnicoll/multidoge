@@ -46,7 +46,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         CreateNewReceivingAddressSubmitAction createNewAction = createNewPanel.getCreateNewReceivingAddressSubmitAction();
         assertTrue("Wallet password is not enabled when it should be", createNewPanel.isWalletPasswordFieldEnabled());
         assertNotNull("createNewAction was not created successfully", createNewAction);
-        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
+        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getImportedKeys().size());
         assertTrue("Wallet is not encrypted but it should be", controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
         assertNull("The last private key backup file was not null", createNewAction.getLastPrivateKeysBackupFile());
         System.out.println("ping 1");
@@ -57,7 +57,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         
         Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY);
 
-        assertEquals("Wrong number of keys after addition of default number of keys with no wallet password", 1, controller.getModel().getActiveWallet().getKeychain().size());    
+        assertEquals("Wrong number of keys after addition of default number of keys with no wallet password", 1, controller.getModel().getActiveWallet().getImportedKeys().size());    
         
         // Check there is a message that the wallet password is required.
         assertEquals("No message to enter wallet password", "Enter the wallet password", createNewPanel.getMessageText());
@@ -84,7 +84,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
 
         Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY);
 
-        assertEquals("Wrong number of keys after addition of default number of keys with wallet password", 2, controller.getModel().getActiveWallet().getKeychain().size()); 
+        assertEquals("Wrong number of keys after addition of default number of keys with wallet password", 2, controller.getModel().getActiveWallet().getImportedKeys().size()); 
 
         // Add twenty addresses by selecting on the combo box.
         createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(20));
@@ -96,7 +96,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
 
         Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY * 40);
 
-        assertEquals("Wrong number of keys after addition of 20 keys", 22, controller.getModel().getActiveWallet().getKeychain().size());  
+        assertEquals("Wrong number of keys after addition of 20 keys", 22, controller.getModel().getActiveWallet().getImportedKeys().size());  
 
         // The added private keys should be encrypted with the same password as the wallet password.
         // Thus a decrypt should work fine.

@@ -135,7 +135,7 @@ public class KeyCrypterOpenSSL {
             return key;
         } catch (Exception e) {
             throw new KeyCrypterException("Could not generate key from password of length " + password.length()
-                    + " and salt '" + Utils.bytesToHexString(salt), e);
+                    + " and salt '" + Utils.HEX.encode(salt), e);
         }
     }
 
@@ -198,7 +198,7 @@ public class KeyCrypterOpenSSL {
             // The result bytes are the SALT_LENGTH bytes followed by the encrypted bytes.
             return concat(salt, encryptedBytes);
         } catch (Exception e) {
-            throw new KeyCrypterException("Could not encrypt bytes '" + Utils.bytesToHexString(plainTextAsBytes) + "'", e);
+            throw new KeyCrypterException("Could not encrypt bytes '" + Utils.HEX.encode(plainTextAsBytes) + "'", e);
         }
     }
 

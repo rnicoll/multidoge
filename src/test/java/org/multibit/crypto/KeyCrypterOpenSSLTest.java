@@ -15,8 +15,8 @@
  */
 package org.multibit.crypto;
 
-import com.google.dogecoin.core.Utils;
-import com.google.dogecoin.crypto.KeyCrypterException;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.crypto.KeyCrypterException;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -56,8 +56,8 @@ public class KeyCrypterOpenSSLTest extends TestCase {
 
         // Decrypt.
         String rebornPlainText = encrypterDecrypter.decrypt(cipherText, PASSWORD1);
-        log.debug("Original: " + Utils.bytesToHexString(TEST_STRING1.getBytes()));
-        log.debug("Reborn  : " + Utils.bytesToHexString(rebornPlainText.getBytes()));
+        log.debug("Original: " + Utils.HEX.encode(TEST_STRING1.getBytes()));
+        log.debug("Reborn  : " + Utils.HEX.encode(rebornPlainText.getBytes()));
         assertEquals(TEST_STRING1, rebornPlainText);
     }
 
@@ -260,8 +260,8 @@ public class KeyCrypterOpenSSLTest extends TestCase {
 
         // Decrypt.
         String rebornPlainText = encrypterDecrypter.decrypt(cipherText, PASSWORD3);
-        log.debug("Original: " + Utils.bytesToHexString(TEST_STRING2.getBytes()));
-        log.debug("Reborn  : " + Utils.bytesToHexString(rebornPlainText.getBytes()));
+        log.debug("Original: " + Utils.HEX.encode(TEST_STRING2.getBytes()));
+        log.debug("Reborn  : " + Utils.HEX.encode(rebornPlainText.getBytes()));
         assertEquals(TEST_STRING2, rebornPlainText);
     }
     
@@ -272,7 +272,7 @@ public class KeyCrypterOpenSSLTest extends TestCase {
         // Encrypt bytes.
         byte[] cipherBytes = encrypterDecrypter.encrypt(TEST_BYTES1, PASSWORD1);
         assertNotNull(cipherBytes);
-        log.debug("\nEncrypterDecrypterTest: cipherBytes = \nlength = " + cipherBytes.length + "\n---------------\n" + Utils.bytesToHexString(cipherBytes) + "\n---------------\n");
+        log.debug("\nEncrypterDecrypterTest: cipherBytes = \nlength = " + cipherBytes.length + "\n---------------\n" + Utils.HEX.encode(cipherBytes) + "\n---------------\n");
 
         // Decrypt bytes. Note the result is zero padded to a cipher block length so you have to truncate it to your expected length.
         byte[] rebornPlainBytes = encrypterDecrypter.decrypt(cipherBytes, PASSWORD1);
@@ -280,9 +280,9 @@ public class KeyCrypterOpenSSLTest extends TestCase {
         byte[] truncatedRebornBytes = new byte[TEST_BYTES1.length];
         System.arraycopy(rebornPlainBytes, 0, truncatedRebornBytes, 0, TEST_BYTES1.length);
 
-        log.debug("Original: " + Utils.bytesToHexString(TEST_BYTES1));
-        log.debug("Reborn  : " + Utils.bytesToHexString(truncatedRebornBytes));
-        assertEquals( Utils.bytesToHexString(TEST_BYTES1),  Utils.bytesToHexString(truncatedRebornBytes));
+        log.debug("Original: " + Utils.HEX.encode(TEST_BYTES1));
+        log.debug("Reborn  : " + Utils.HEX.encode(truncatedRebornBytes));
+        assertEquals( Utils.HEX.encode(TEST_BYTES1),  Utils.HEX.encode(truncatedRebornBytes));
     }
 
     private void writeToFile(String textToWrite, File destinationFile) throws IOException {

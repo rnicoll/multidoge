@@ -17,8 +17,8 @@ package org.multibit.file;
 
 import java.util.Date;
 
-import com.google.dogecoin.core.ECKey;
-import com.google.dogecoin.core.Utils;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.Utils;
 
 /**
  * POJO containing an ECKey and Date
@@ -32,9 +32,9 @@ public class PrivateKeyAndDate {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((date == null) ? 0 : date.hashCode());
-        result = prime * result + ((key == null) ? 0 : Utils.bytesToHexString(key.getPrivKeyBytes()).hashCode());
-        result = prime * result + ((key == null) ? 0 : Utils.bytesToHexString(key.getPubKey()).hashCode());
-        result = prime * result + ((key == null) ? 0 : Utils.bytesToHexString(key.getEncryptedPrivateKey().getEncryptedBytes()).hashCode());
+        result = prime * result + ((key == null) ? 0 : Utils.HEX.encode(key.getPrivKeyBytes()).hashCode());
+        result = prime * result + ((key == null) ? 0 : Utils.HEX.encode(key.getPubKey()).hashCode());
+        result = prime * result + ((key == null) ? 0 : Utils.HEX.encode(key.getEncryptedPrivateKey().encryptedBytes).hashCode());
                return result;
     }
 
@@ -58,11 +58,11 @@ public class PrivateKeyAndDate {
         if (key == null) {
             if (other.key != null)
                 return false;
-        } else if (!Utils.bytesToHexString(key.getPrivKeyBytes()).equals(Utils.bytesToHexString(other.key.getPrivKeyBytes()))) {
+        } else if (!Utils.HEX.encode(key.getPrivKeyBytes()).equals(Utils.HEX.encode(other.key.getPrivKeyBytes()))) {
             return false;
-        } else if (!Utils.bytesToHexString(key.getPubKey()).equals(Utils.bytesToHexString(other.key.getPubKey()))) {
+        } else if (!Utils.HEX.encode(key.getPubKey()).equals(Utils.HEX.encode(other.key.getPubKey()))) {
             return false;
-        } else if (!Utils.bytesToHexString(key.getEncryptedPrivateKey().getEncryptedBytes()).equals(Utils.bytesToHexString(other.key.getEncryptedPrivateKey().getEncryptedBytes()))) {
+        } else if (!Utils.HEX.encode(key.getEncryptedPrivateKey().encryptedBytes).equals(Utils.HEX.encode(other.key.getEncryptedPrivateKey().encryptedBytes))) {
             // Note you can have two equivalent keys (with the same private key) and when encrypted and they appear different due to the random IV.
             return false;
         }

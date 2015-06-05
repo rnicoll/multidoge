@@ -35,8 +35,8 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TimeZone;
 
-import com.google.dogecoin.crypto.KeyCrypter;
-import com.google.dogecoin.crypto.KeyCrypterException;
+import org.bitcoinj.crypto.KeyCrypter;
+import org.bitcoinj.crypto.KeyCrypterException;
 
 import org.multibit.crypto.KeyCrypterOpenSSL;
 import org.multibit.utils.DateUtils;
@@ -44,19 +44,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
-import com.google.dogecoin.core.AddressFormatException;
-import com.google.dogecoin.core.Block;
-import com.google.dogecoin.core.BlockChain;
-import com.google.dogecoin.core.DumpedPrivateKey;
-import com.google.dogecoin.core.ECKey;
-import com.google.dogecoin.core.NetworkParameters;
-import com.google.dogecoin.core.ScriptException;
-import com.google.dogecoin.core.StoredBlock;
-import com.google.dogecoin.core.Transaction;
-import com.google.dogecoin.core.TransactionInput;
-import com.google.dogecoin.core.TransactionOutput;
-import com.google.dogecoin.core.Utils;
-import com.google.dogecoin.core.Wallet;
+import org.bitcoinj.core.AddressFormatException;
+import org.bitcoinj.core.Block;
+import org.bitcoinj.core.BlockChain;
+import org.bitcoinj.core.DumpedPrivateKey;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.ScriptException;
+import org.bitcoinj.core.StoredBlock;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionInput;
+import org.bitcoinj.core.TransactionOutput;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.core.Wallet;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
@@ -177,8 +177,8 @@ public class PrivateKeysHandler {
                     PrivateKeyAndDate expected = iteratorExpected.next();
                     PrivateKeyAndDate imported = iteratorImported.next();
 
-                    if (!Utils.bytesToHexString(expected.getKey().getPrivKeyBytes()).equals(
-                            Utils.bytesToHexString(imported.getKey().getPrivKeyBytes()))) {
+                    if (!Utils.HEX.encode(expected.getKey().getPrivKeyBytes()).equals(
+                            Utils.HEX.encode(imported.getKey().getPrivKeyBytes()))) {
                         messageKey = "privateKeysHandler.keysDidNotMatch";
                         thereWereFailures = true;
                         break;
@@ -265,7 +265,7 @@ public class PrivateKeysHandler {
        // Determine if keys need to be decrypted.
         boolean decryptionRequired = false;
 
-        Collection<ECKey> keychain = wallet.getKeychain();
+        Collection<ECKey> keychain = wallet.getImportedKeys();
         Collection<PrivateKeyAndDate> keyAndDates = new ArrayList<PrivateKeyAndDate>();
 
         synchronized (keychain) {
@@ -392,7 +392,7 @@ public class PrivateKeysHandler {
                 thereWereMissingDates = true;
             } else {
                 if (loop.getKey() != null) {
-                    if (wallet != null && !keyChainContainsPrivateKey(wallet.getKeychain(), loop.getKey())) {
+                    if (wallet != null && !keyChainContainsPrivateKey(wallet.getImportedKeys(), loop.getKey())) {
                         replayDate = replayDate.before(loop.getDate()) ? replayDate : loop.getDate();
                     }
                 }

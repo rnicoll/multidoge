@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package com.google.dogecoin.core;
+package org.bitcoinj.core;
 
-import java.math.BigInteger;
-
-import com.google.dogecoin.store.BlockStore;
-import com.google.dogecoin.store.BlockStoreException;
+import org.bitcoinj.store.BlockStore;
+import org.bitcoinj.store.BlockStoreException;
 
 /**
  * This is the bitcoinj TestUtils but renamed as jenkins was complaining there are no tests in it
@@ -27,13 +25,13 @@ import com.google.dogecoin.store.BlockStoreException;
  *
  */
 public class CoreTestUtils {
-    public static Transaction createFakeTx(NetworkParameters params, BigInteger nanocoins, Address to) {
+    public static Transaction createFakeTx(NetworkParameters params, Coin nanocoins, Address to) {
         // Create a fake TX of sufficient realism to exercise the unit tests. Two outputs, one to us, one to somewhere
         // else to simulate change.
         Transaction t = new Transaction(params);
         TransactionOutput outputToMe = new TransactionOutput(params, t, nanocoins, to);
         t.addOutput(outputToMe);
-        TransactionOutput change = new TransactionOutput(params, t, Utils.toNanoCoins(1, 11), 
+        TransactionOutput change = new TransactionOutput(params, t, Coin.MICROCOIN, 
                 new ECKey().toAddress(params));
         t.addOutput(change);
         // Make a previous tx simply to send us sufficient coins. This prev tx is not really valid but it doesn't

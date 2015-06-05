@@ -15,10 +15,10 @@
  */
 package org.multibit.file;
 
-import com.google.dogecoin.core.BlockChain;
-import com.google.dogecoin.core.ECKey;
-import com.google.dogecoin.core.Wallet;
-import com.google.dogecoin.crypto.KeyCrypterException;
+import org.bitcoinj.core.BlockChain;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.Wallet;
+import org.bitcoinj.crypto.KeyCrypterException;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -376,7 +376,7 @@ public class FileHandler {
                     boolean walletIsActuallyEncrypted = false;
                     Wallet wallet = perWalletModelData.getWallet();
                     // Check all the keys individually.
-                    for (ECKey key : wallet.getKeychain()) {
+                    for (ECKey key : wallet.getImportedKeys()) {
                         if (key.isEncrypted()) {
                             walletIsActuallyEncrypted = true;
                             break;
@@ -472,7 +472,7 @@ public class FileHandler {
                     boolean walletIsActuallyEncrypted = false;
                     Wallet wallet = perWalletModelData.getWallet();
                     // Check all the keys individually.
-                    for (ECKey key : wallet.getKeychain()) {
+                    for (ECKey key : wallet.getImportedKeys()) {
                         if (key.isEncrypted()) {
                             walletIsActuallyEncrypted = true;
                             break;

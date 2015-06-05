@@ -1,5 +1,6 @@
 package org.multibit.exchange;
 
+import org.bitcoinj.core.Coin;
 import org.joda.money.Money;
 
 /**
@@ -17,7 +18,7 @@ public class CurrencyConverterResult {
     
     private boolean btcMoneyValid;
     
-    private Money btcMoney;
+    private Coin btcMoney;
     
     private String btcMessage;
 
@@ -63,11 +64,11 @@ public class CurrencyConverterResult {
         this.btcMoneyValid = btcMoneyValid;
     }
 
-    public Money getBtcMoney() {
+    public Coin getBtcMoney() {
         return btcMoney;
     }
 
-    public void setBtcMoney(Money btcMoney) {
+    public void setBtcMoney(Coin btcMoney) {
         this.btcMoney = btcMoney;
     }
 

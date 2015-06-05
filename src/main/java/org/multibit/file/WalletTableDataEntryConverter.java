@@ -10,6 +10,7 @@ import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.bitcoin.WalletTableData;
 
 import com.googlecode.jcsv.writer.CSVEntryConverter;
+import org.bitcoinj.core.Coin;
 
 /**
  * Convert WalletTableData into single fields for use in a CSV file.
@@ -41,9 +42,9 @@ public class WalletTableDataEntryConverter implements CSVEntryConverter<WalletTa
 
         // Amount in BTC.
         String amountBTC = "";
-        BigInteger debitAmount = walletTableData.getDebit();
-        BigInteger creditAmount = walletTableData.getCredit();
-        if (debitAmount != null && debitAmount.compareTo(BigInteger.ZERO) > 0) {
+        Coin debitAmount = walletTableData.getDebit();
+        Coin creditAmount = walletTableData.getCredit();
+        if (debitAmount != null && debitAmount.compareTo(Coin.ZERO) > 0) {
             amountBTC = bitcoinController.getLocaliser().bitcoinValueToString(debitAmount.negate(), false, true);
         } else {
             if (creditAmount != null) {
@@ -55,7 +56,7 @@ public class WalletTableDataEntryConverter implements CSVEntryConverter<WalletTa
         // Amount in fiat
         String amountFiat = "";
         if (CurrencyConverter.INSTANCE.isShowingFiat()) {
-            if (walletTableData.getDebit() != null && walletTableData.getDebit().compareTo(BigInteger.ZERO) > 0) {
+            if (walletTableData.getDebit() != null && walletTableData.getDebit().compareTo(Coin.ZERO) > 0) {
                 Money debitAmountFiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(walletTableData.getDebit());
                 if (debitAmountFiat != null) {
                     amountFiat = CurrencyConverter.INSTANCE.getFiatAsLocalisedString(debitAmountFiat.negated(), false, false);

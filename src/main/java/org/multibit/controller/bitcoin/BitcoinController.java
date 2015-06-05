@@ -35,13 +35,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import org.bitcoinj.script.Script;
 
 /**
  * The MVC controller for MultiBit.
@@ -185,7 +185,7 @@ public class BitcoinController extends AbstractController<CoreController> implem
     }
 
     @Override
-    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+    public void onCoinsReceived(Wallet wallet, Transaction transaction, Coin prevBalance, Coin newBalance) {
         //log.debug("onCoinsReceived called");
         for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
@@ -193,7 +193,7 @@ public class BitcoinController extends AbstractController<CoreController> implem
     }
 
     @Override
-    public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+    public void onCoinsSent(Wallet wallet, Transaction transaction, Coin prevBalance, Coin newBalance) {
         //log.debug("onCoinsSent called");
         for (ViewSystem viewSystem : super.getViewSystem()) {
             viewSystem.onCoinsSent(wallet, transaction, prevBalance, newBalance);
@@ -226,10 +226,10 @@ public class BitcoinController extends AbstractController<CoreController> implem
         }
     }
     
-    @Override
+    /* @Override
     public void onKeysAdded(Wallet wallet, List<ECKey> keys) {
         log.debug("Keys added : " + keys.toString());
-    }
+    } */
 
     @Override
     public void onReorganize(Wallet wallet) {
@@ -313,7 +313,7 @@ public class BitcoinController extends AbstractController<CoreController> implem
             log.error("Could not decode the label in UTF-8. Unusual URI entry or platform.");
         }
         // No amount? Set it to zero.
-        BigInteger numericAmount = null == bitcoinURI.getAmount() ? BigInteger.ZERO : bitcoinURI.getAmount();
+        Coin numericAmount = null == bitcoinURI.getAmount() ? Coin.ZERO : bitcoinURI.getAmount();
         String amount = getLocaliser().bitcoinValueToStringNotLocalised(numericAmount, false, false);
 
         if (Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
@@ -349,6 +349,21 @@ public class BitcoinController extends AbstractController<CoreController> implem
     public final AbstractEventHandler getEventHandler() {
         return this.eventHandler;
     }
+
+    @Override
+    public void onScriptsChanged(Wallet wallet, List<Script> scripts, boolean isAddingScripts) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void onKeysAdded(List<ECKey> keys) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void onConfidenceChanged(TransactionConfidence confidence, ChangeReason reason) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
     private class EventHandler extends AbstractEventHandler<BitcoinController> {
 
@@ -373,12 +388,5 @@ public class BitcoinController extends AbstractController<CoreController> implem
         public void handleQuitEvent(ExitAction exitAction) {
             exitAction.setBitcoinController(super.controller);
         }
-    }
-
-    public void onConfidenceChanged(Transaction tx) {
-    }
-
-    @Override
-    public void onConfidenceChanged(Transaction tx, ChangeReason reason) {
     }
 }

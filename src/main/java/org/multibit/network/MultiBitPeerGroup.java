@@ -18,9 +18,9 @@ package org.multibit.network;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 
-import com.google.dogecoin.core.BlockChain;
-import com.google.dogecoin.core.NetworkParameters;
-import com.google.dogecoin.core.PeerGroup;
+import org.bitcoinj.core.BlockChain;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.PeerGroup;
 
 
 public class MultiBitPeerGroup extends PeerGroup {

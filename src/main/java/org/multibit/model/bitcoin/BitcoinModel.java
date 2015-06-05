@@ -15,9 +15,9 @@
  */
 package org.multibit.model.bitcoin;
 
-import com.google.dogecoin.core.*;
-import com.google.dogecoin.core.Wallet.BalanceType;
-import com.google.dogecoin.store.BlockStoreException;
+import org.bitcoinj.core.*;
+import org.bitcoinj.core.Wallet.BalanceType;
+import org.bitcoinj.store.BlockStoreException;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.model.AbstractModel;
@@ -26,8 +26,8 @@ import org.multibit.model.core.CoreModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
 import java.util.*;
+import org.altcoinj.params.DogecoinMainNetParams;
 
 /**
  * Model containing the MultiBit data.
@@ -87,14 +87,14 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
     public static final String BRING_TO_FRONT = "bringToFront";
 
     // Default fee and feePerKB
-    public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("100000000");
-    public static final BigInteger SEND_FEE_PER_KB_DEFAULT = new BigInteger("100000000");
+    public static final Coin SEND_FEE_DEFAULT = Coin.COIN;
+    public static final Coin SEND_FEE_PER_KB_DEFAULT = Coin.COIN;
     
     // Minimum fee.
-    public static final BigInteger SEND_MINIMUM_FEE = new BigInteger("100000000");
+    public static final Coin SEND_MINIMUM_FEE = Coin.COIN;
 
     // Maximum fee.
-    public static final BigInteger SEND_MAXIMUM_FEE = new BigInteger("100000000000"); // 1000 DOGE. Hope it won't ever go above du to bogus transactions.
+    public static final Coin SEND_MAXIMUM_FEE = Coin.valueOf(100000000000l); // 1000 DOGE. Hope it won't ever go above du to bogus transactions.
 
     // Receive dogecoin.
     public static final String IS_RECEIVE_BITCOIN = "isReceiveBitcoin";
@@ -225,9 +225,9 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
      *
      * @return The estimated balance
      */
-    public BigInteger getActiveWalletEstimatedBalance() {
+    public Coin getActiveWalletEstimatedBalance() {
         if (activeWalletModelData.getWallet() == null) {
-            return BigInteger.ZERO;
+            return Coin.ZERO;
         } else {
             return activeWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED);
         }
@@ -238,9 +238,9 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
      *
      * @return the available balance
      */
-    public BigInteger getActiveWalletAvailableBalance() {
+    public Coin getActiveWalletAvailableBalance() {
         if (activeWalletModelData.getWallet() == null) {
-            return BigInteger.ZERO;
+            return Coin.ZERO;
         } else {
             return activeWalletModelData.getWallet().getBalance(BalanceType.AVAILABLE);
         }
@@ -457,14 +457,14 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
         // Run through all the walletdata to see if both credit and debit are
         // set (this means change was received).
         for (WalletTableData walletDataRow : walletData) {
-            if (walletDataRow.getCredit() != null && (walletDataRow.getCredit().compareTo(BigInteger.ZERO) > 0)
-                    && (walletDataRow.getDebit() != null) && walletDataRow.getDebit().compareTo(BigInteger.ZERO) > 0) {
-                BigInteger net = walletDataRow.getCredit().subtract(walletDataRow.getDebit());
-                if (net.compareTo(BigInteger.ZERO) >= 0) {
+            if (walletDataRow.getCredit() != null && (walletDataRow.getCredit().compareTo(Coin.ZERO) > 0)
+                    && (walletDataRow.getDebit() != null) && walletDataRow.getDebit().compareTo(Coin.ZERO) > 0) {
+                Coin net = walletDataRow.getCredit().subtract(walletDataRow.getDebit());
+                if (net.compareTo(Coin.ZERO) >= 0) {
                     walletDataRow.setCredit(net);
-                    walletDataRow.setDebit(BigInteger.ZERO);
+                    walletDataRow.setDebit(Coin.ZERO);
                 } else {
-                    walletDataRow.setCredit(BigInteger.ZERO);
+                    walletDataRow.setCredit(Coin.ZERO);
                     walletDataRow.setDebit(net.negate());
                 }
             }
@@ -492,7 +492,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
         }
 
         if (!(perWalletModelData == null)) {
-            List<ECKey> keyChain = perWalletModelData.getWallet().getKeychain();
+            List<ECKey> keyChain = perWalletModelData.getWallet().getImportedKeys();
             if (keyChain != null) {
                 NetworkParameters networkParameters = getNetworkParameters();
                 if (networkParameters != null) {
@@ -535,7 +535,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
      * @return A description of the transaction
      */
     public String createDescription(final Controller controller, Wallet wallet, List<TransactionInput> transactionInputs,
-            List<TransactionOutput> transactionOutputs, BigInteger credit, BigInteger debit) {
+            List<TransactionOutput> transactionOutputs, Coin credit, Coin debit) {
         String toReturn = "";
 
         WalletData perWalletModelData = null;
@@ -564,7 +564,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
             }
         }
 
-        if (credit != null && credit.compareTo(BigInteger.ZERO) > 0) {
+        if (credit != null && credit.compareTo(Coin.ZERO) > 0) {
             // Credit.
             try {
                 String addressString = "";
@@ -592,7 +592,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
             }
         }
 
-        if (debit != null && debit.compareTo(BigInteger.ZERO) > 0) {
+        if (debit != null && debit.compareTo(Coin.ZERO) > 0) {
             // Debit.
             try {
                 // See if the address is a known sending address.
@@ -701,7 +701,7 @@ public class BitcoinModel extends AbstractModel<CoreModel> {
 //        } else if (BitcoinModel.TESTNET3_VALUE.equalsIgnoreCase(testOrProduction)) {
 //            return NetworkParameters.testNet();
 //        } else {
-            return NetworkParameters.prodNet();
+            return DogecoinMainNetParams.get();
 //        }
     }
 

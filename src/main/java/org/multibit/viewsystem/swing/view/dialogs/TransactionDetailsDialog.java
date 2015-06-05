@@ -163,7 +163,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         mainPanel.setLayout(new BorderLayout());
 
         // get the transaction value out of the wallet data
-        BigInteger value = null;
+        Coin value = null;
         try {
             value = rowTableData.getTransaction().getValue(this.bitcoinController.getModel().getActiveWallet());
         } catch (ScriptException e) {
@@ -295,16 +295,16 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(totalDebitText, constraints);
 
-        BigInteger fee = rowTableData.getTransaction().calculateFee(this.bitcoinController.getModel().getActiveWallet());
-        feeText.setText(CurrencyConverter.INSTANCE.prettyPrint(Utils.bitcoinValueToPlainString(fee)));
-        if (BigInteger.ZERO.compareTo(value) > 0) {
+        Coin fee = rowTableData.getTransaction().getFee();
+        feeText.setText(CurrencyConverter.INSTANCE.prettyPrint(fee.toPlainString()));
+        if (value.longValue() < 0) {
             // debit
             amountLabel.setText(controller.getLocaliser().getString("transactionDetailsDialog.amountSent"));
             try {
-                BigInteger totalDebit = rowTableData.getTransaction().getValue(this.bitcoinController.getModel().getActiveWallet()).negate();
-                BigInteger amountSent = totalDebit.subtract(fee);
-                totalDebitText.setText(CurrencyConverter.INSTANCE.prettyPrint(Utils.bitcoinValueToPlainString(totalDebit)));
-                amountText.setText(CurrencyConverter.INSTANCE.prettyPrint(Utils.bitcoinValueToPlainString(amountSent)));
+                Coin totalDebit = rowTableData.getTransaction().getValue(this.bitcoinController.getModel().getActiveWallet()).negate();
+                Coin amountSent = totalDebit.subtract(fee);
+                totalDebitText.setText(CurrencyConverter.INSTANCE.prettyPrint(totalDebit.toPlainString()));
+                amountText.setText(CurrencyConverter.INSTANCE.prettyPrint(amountSent.toPlainString()));
             } catch (ScriptException e) {
                 e.printStackTrace();
             }
@@ -316,8 +316,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         } else {
             // Credit - cannot calculate fee so do not show.
             try {
-                amountText.setText(CurrencyConverter.INSTANCE.prettyPrint(Utils.bitcoinValueToPlainString(rowTableData.getTransaction().getValue(
-                        this.bitcoinController.getModel().getActiveWallet()))));
+                amountText.setText(CurrencyConverter.INSTANCE.prettyPrint(rowTableData.getTransaction().getValue(
+                        this.bitcoinController.getModel().getActiveWallet()).toPlainString()));
             } catch (ScriptException e) {
                 e.printStackTrace();
             }
@@ -530,8 +530,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         Wallet wallet = this.bitcoinController.getModel().getActiveWallet();
         List<TransactionOutput> transactionOutputs = transaction.getOutputs();
 
-        BigInteger credit = transaction.getValueSentToMe(wallet);
-        BigInteger debit = null;
+        Coin credit = transaction.getValueSentToMe(wallet);
+        Coin debit = null;
         try {
             debit = transaction.getValueSentFromMe(wallet);
         } catch (ScriptException e1) {
@@ -552,7 +552,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             }
         }
 
-        if (credit != null && credit.compareTo(BigInteger.ZERO) > 0) {
+        if (credit != null && credit.isPositive()) {
             // credit
             try {
                 String addressString = "";
@@ -580,7 +580,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             }
         }
 
-        if (debit != null && debit.compareTo(BigInteger.ZERO) > 0) {
+        if (debit != null && debit.isPositive()) {
             // debit
             try {
                 // see if the address is a known sending address
@@ -638,7 +638,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         StringBuilder builder = new StringBuilder();
 
         if (MultiBit.getController() != null && MultiBit.getController().getLocaliser() != null) {
-            int peers = transactionConfidence.getBroadcastByCount();
+            int peers = transactionConfidence.getBroadcastBy().size();
             if (peers > 0) {
                 builder
                     .append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy"))

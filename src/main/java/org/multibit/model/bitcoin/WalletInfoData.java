@@ -15,9 +15,9 @@
  */
 package org.multibit.model.bitcoin;
 
-import com.google.dogecoin.core.Address;
-import com.google.dogecoin.core.ECKey;
-import com.google.dogecoin.core.Wallet;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.Wallet;
 import org.multibit.MultiBit;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
@@ -173,7 +173,7 @@ public class WalletInfoData {
 
         boolean addressMatchesKey = false;
         if (wallet != null) {
-            for (ECKey key : wallet.getKeys()) {
+            for (ECKey key : wallet.getImportedKeys()) {
                 if (receivingAddress.getAddress().equals(
                         key.toAddress(MultiBit.getBitcoinController().getModel().getNetworkParameters()).toString())) {
                     addressMatchesKey = true;
@@ -198,7 +198,7 @@ public class WalletInfoData {
             while (iterator.hasNext()) {
                 boolean addressMatchesKey = false;
                 WalletAddressBookData walletAddressBookData = iterator.next();
-                for (ECKey key : wallet.getKeys()) {
+                for (ECKey key : wallet.getImportedKeys()) {
                     if (walletAddressBookData.getAddress().equals(
                             key.toAddress(MultiBit.getBitcoinController().getModel().getNetworkParameters()).toString())) {
                         addressMatchesKey = true;

@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Set;
 
 public class BitcoinPeerEventListener implements PeerEventListener {
 
@@ -24,7 +25,7 @@ public class BitcoinPeerEventListener implements PeerEventListener {
   }
 
   @Override
-  public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
+  public void onBlocksDownloaded(Peer peer, Block block, FilteredBlock filteredBlock, int blocksLeft) {
     this.bitcoinController.fireBlockDownloaded();
 
     if (blocksLeft == 0) {
@@ -116,5 +117,10 @@ public class BitcoinPeerEventListener implements PeerEventListener {
   @Override
   public List<Message> getData(Peer peer, GetDataMessage m) {
     return null;
+  }
+
+  @Override
+  public void onPeersDiscovered(Set<PeerAddress> peerAddresses) {
+    return;
   }
 }

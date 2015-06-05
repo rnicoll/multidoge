@@ -24,8 +24,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.Localiser;
 import org.multibit.controller.bitcoin.BitcoinController;
-import com.google.dogecoin.core.ECKey;
-import com.google.dogecoin.core.Utils;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.Utils;
 import org.multibit.CreateControllers;
 
 public class AlertManagerTest extends TestCase {
@@ -137,10 +137,10 @@ public class AlertManagerTest extends TestCase {
         // Set version text to be a version number and a message with a signature.
         // Local version is the same as the "remote" version
         ECKey signature1Key = new ECKey();
-        String publicKey1AsHex = Utils.bytesToHexString(signature1Key.getPubKey());
+        String publicKey1AsHex = Utils.HEX.encode(signature1Key.getPubKey());
         
         ECKey signature2Key = new ECKey();
-        String publicKey2AsHex = Utils.bytesToHexString(signature2Key.getPubKey());
+        String publicKey2AsHex = Utils.HEX.encode(signature2Key.getPubKey());
         
         versionText = new StringBuffer();
         versionText.append("0.4.23\n");   

@@ -44,6 +44,7 @@ import java.awt.event.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import org.bitcoinj.core.Coin;
 
 
 public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener, WalletBusyListener {
@@ -585,7 +586,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
               ColorAndFontConstants.BACKGROUND_COLOR.getBlue() - COLOR_DELTA), Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getGreen() - COLOR_DELTA));
     }
 
-    BigInteger estimatedBalance = perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED);
+    Coin estimatedBalance = perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED);
     String balanceTextToShowBTC = controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false);
     String balanceTextToShowFiat = "";
     if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {

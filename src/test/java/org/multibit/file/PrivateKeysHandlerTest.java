@@ -17,9 +17,9 @@ package org.multibit.file;
 
 
 
-import com.google.dogecoin.core.ECKey;
-import com.google.dogecoin.core.NetworkParameters;
-import com.google.dogecoin.core.Wallet;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.Wallet;
 import com.piuk.blockchain.MyWallet;
 import junit.framework.TestCase;
 import org.junit.Test;
@@ -146,7 +146,7 @@ public class PrivateKeysHandlerTest extends TestCase {
 
         Wallet bitcoinj = wallet.getBitcoinJWallet();
         Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
-        for (ECKey key : bitcoinj.getKeychain()) {
+        for (ECKey key : bitcoinj.getImportedKeys()) {
             privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
         }
         
@@ -180,7 +180,7 @@ public class PrivateKeysHandlerTest extends TestCase {
 
         Wallet bitcoinj = wallet.getBitcoinJWallet();
         Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
-        for (ECKey key : bitcoinj.getKeychain()) {
+        for (ECKey key : bitcoinj.getImportedKeys()) {
             privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
         }
         
@@ -215,7 +215,7 @@ public class PrivateKeysHandlerTest extends TestCase {
         
         Wallet bitcoinj = wallet.getBitcoinJWallet();
         Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
-        for (ECKey key : bitcoinj.getKeychain()) {
+        for (ECKey key : bitcoinj.getImportedKeys()) {
             privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
         }
         
@@ -250,7 +250,7 @@ public class PrivateKeysHandlerTest extends TestCase {
 
       Wallet bitcoinj = wallet.getBitcoinJWallet();
       Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
-      for (ECKey key : bitcoinj.getKeychain()) {
+      for (ECKey key : bitcoinj.getImportedKeys()) {
           privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
       }
 

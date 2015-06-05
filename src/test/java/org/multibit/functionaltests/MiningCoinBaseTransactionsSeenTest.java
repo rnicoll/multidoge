@@ -16,11 +16,11 @@
 package org.multibit.functionaltests;
 
 
-import com.google.dogecoin.core.DumpedPrivateKey;
-import com.google.dogecoin.core.NetworkParameters;
-import com.google.dogecoin.core.Transaction;
-import com.google.dogecoin.core.Wallet;
-import com.google.dogecoin.core.Wallet.BalanceType;
+import org.bitcoinj.core.DumpedPrivateKey;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.Wallet;
+import org.bitcoinj.core.Wallet.BalanceType;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;

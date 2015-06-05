@@ -20,7 +20,7 @@ import java.util.UUID;
 
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanelDownloadListener;
 
-import com.google.dogecoin.core.Wallet;
+import org.bitcoinj.core.Wallet;
 
 /**
  * This wrapper class wraps all the data pertaining to a single wallet.
@@ -113,11 +113,12 @@ public class WalletData {
 
     public void setWalletInfo(WalletInfoData walletInfo) {
         this.walletInfo = walletInfo;
-        if (walletInfo != null && wallet != null) {
+        // FIXME: Implement
+        /* if (walletInfo != null && wallet != null) {
             if (wallet.getVersion() == null) {
                 wallet.setVersion(walletInfo.getWalletVersion());
             }
-        }
+        } */
     }
 
     public List<WalletTableData> getWalletTableDataList() {

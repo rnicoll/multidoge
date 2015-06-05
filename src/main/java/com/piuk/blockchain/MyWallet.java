@@ -40,22 +40,23 @@ import org.spongycastle.util.encoders.Hex;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.*;
+import org.altcoinj.params.DogecoinMainNetParams;
 
 @SuppressWarnings("unchecked")
 public class MyWallet {
-	private static final int AESBlockSize = 4;
+    private static final int AESBlockSize = 4;
     public static final int DefaultPBKDF2Iterations = 10;
     public static final int MaxPBKDF2Iterations = 20000;
     public static final int MinPBKDF2Iterations = 0;
     public static final double SupportedEncryptionVersion = 2.0;
 
-	public Map<String, Object> root;
+    public Map<String, Object> root;
     public  Map<String, Object> rootContainer;
 
-	public String temporyPassword;
-	public String temporySecondPassword;
+    public String temporyPassword;
+    public String temporySecondPassword;
 
-	public static final NetworkParameters params = NetworkParameters.prodNet();
+    public static final NetworkParameters params = DogecoinMainNetParams.get();
 
     public MyWallet(String base64Payload, String password) throws Exception {
         if (base64Payload == null || base64Payload.length() == 0 || password == null || password.length() == 0)
@@ -126,7 +127,7 @@ public class MyWallet {
 				continue;
 			}
 
-			wallet.addKey(decodePK(base58Priv));
+			wallet.importKey(decodePK(base58Priv));
 		}
 	}
 
@@ -280,7 +281,8 @@ public class MyWallet {
         // Prepend a zero byte to make the biginteger unsigned
         byte[] appendZeroByte = concat(new byte[1], privBytes);
 
-        ECKey ecKey = new ECKey(new BigInteger(appendZeroByte));
+        // ECKey ecKey = new ECKey(new BigInteger(appendZeroByte));
+        ECKey ecKey = ECKey.fromPrivate(new BigInteger(appendZeroByte), false);
 
         return ecKey;
     }

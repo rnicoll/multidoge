@@ -116,7 +116,7 @@ public class ExitAction extends AbstractExitAction {
             // Stop the peer group so that blocks are notified to wallets correctly.
             if (bitcoinController.getMultiBitService().getPeerGroup() != null) {
                 log.debug("Closing Bitcoin network connection...");
-                bitcoinController.getMultiBitService().getPeerGroup().stopAndWait();
+                bitcoinController.getMultiBitService().getPeerGroup().stop();
                 log.debug("PeerGroup is now stopped.");
             }
 

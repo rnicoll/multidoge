@@ -16,7 +16,7 @@
 
 package org.multibit.network;
 
-import com.google.dogecoin.core.DownloadListener;
+import org.bitcoinj.core.DownloadProgressTracker;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
@@ -43,7 +43,7 @@ import java.util.List;
  * implementation does not have to be thread safe.
  * 
  */
-public class MultiBitDownloadListener extends DownloadListener {
+public class MultiBitDownloadListener extends DownloadProgressTracker {
     private static final Logger log = LoggerFactory.getLogger(MultiBitDownloadListener.class);
 
     public static final double DONE_FOR_DOUBLES = 99.99; // not quite 100 per

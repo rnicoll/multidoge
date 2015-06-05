@@ -15,14 +15,14 @@
  */
 package org.multibit.network;
 
-import com.google.dogecoin.core.MultiBitBlockChain;
-import com.google.dogecoin.core.*;
-import com.google.dogecoin.core.Wallet.SendRequest;
-import com.google.dogecoin.crypto.KeyCrypterException;
-import com.google.dogecoin.discovery.DnsDiscovery;
-import com.google.dogecoin.store.BlockStore;
-import com.google.dogecoin.store.BlockStoreException;
-import com.google.dogecoin.store.SPVBlockStore;
+import org.bitcoinj.core.MultiBitBlockChain;
+import org.bitcoinj.core.*;
+import org.bitcoinj.core.Wallet.SendRequest;
+import org.bitcoinj.crypto.KeyCrypterException;
+import org.bitcoinj.net.discovery.DnsDiscovery;
+import org.bitcoinj.store.BlockStore;
+import org.bitcoinj.store.BlockStoreException;
+import org.bitcoinj.store.SPVBlockStore;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 import org.multibit.ApplicationDataDirectoryLocator;
@@ -431,7 +431,7 @@ public class MultiBitService {
         // Create a brand new wallet - by default unencrypted.
         wallet = new Wallet(networkParameters);
         ECKey newKey = new ECKey();
-        wallet.addKey(newKey);
+        wallet.importKey(newKey);
 
         perWalletModelDataToReturn = bitcoinController.getModel().addWallet(bitcoinController, wallet, walletFile.getAbsolutePath());
 
@@ -464,7 +464,7 @@ public class MultiBitService {
     if (wallet != null) {
       // Add the keys for this wallet to the address book as receiving
       // addresses.
-      List<ECKey> keys = wallet.getKeychain();
+      List<ECKey> keys = wallet.getImportedKeys();
       if (keys != null) {
         if (!newWalletCreated) {
           perWalletModelDataToReturn = bitcoinController.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
@@ -602,7 +602,7 @@ public class MultiBitService {
       aesKey = perWalletModelData.getWallet().getKeyCrypter().deriveKey(password);
     }
     sendRequest.aesKey = aesKey;
-    sendRequest.fee = BigInteger.ZERO;
+    sendRequest.fee = Coin.ZERO;
     sendRequest.feePerKb = BitcoinModel.SEND_FEE_PER_KB_DEFAULT;
 
     sendRequest.tx.getConfidence().addEventListener(perWalletModelData.getWallet().getTxConfidenceListener());
@@ -610,7 +610,7 @@ public class MultiBitService {
     try {
       // The transaction is already added to the wallet (in SendBitcoinConfirmAction) so here we just need
       // to sign it, commit it and broadcast it.
-      perWalletModelData.getWallet().sign(sendRequest);
+      perWalletModelData.getWallet().signTransaction(sendRequest);
       perWalletModelData.getWallet().commitTx(sendRequest.tx);
 
       // The tx has been committed to the pending pool by this point (via sendCoinsOffline -> commitTx), so it has
@@ -620,7 +620,7 @@ public class MultiBitService {
       // method.
       peerGroup.broadcastTransaction(sendRequest.tx);
 
-      log.debug("Sending transaction '" + Utils.bytesToHexString(sendRequest.tx.bitcoinSerialize()) + "'");
+      log.debug("Sending transaction '" + Utils.HEX.encode(sendRequest.tx.bitcoinSerialize()) + "'");
     } catch (VerificationException e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();

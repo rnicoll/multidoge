@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
+import org.bitcoinj.core.Coin;
 
 /**
  * A class to validate String addresses and amounts.
@@ -80,12 +81,12 @@ public class Validator {
             amountValidatesOk = Boolean.FALSE;
         } else {
             // See if the amount is a number.
-            BigInteger amountBigInteger = null;
+            Coin amountCoin = null;
             try {
                 CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amount);
                 if (converterResult.isBtcMoneyValid()) {
                     // Parses ok.
-                    amountBigInteger = converterResult.getBtcMoney().getAmount().toBigInteger();
+                    amountCoin = converterResult.getBtcMoney();
                 } else {
                     amountIsInvalid = Boolean.TRUE;
                     amountValidatesOk = Boolean.FALSE;
@@ -100,20 +101,20 @@ public class Validator {
 
             // See if the amount is negative or zero.
             if (amountValidatesOk.booleanValue()) {
-                if (amountBigInteger.compareTo(BigInteger.ZERO) <= 0) {
+                if (amountCoin.longValue() <= 0) {
                     amountValidatesOk = Boolean.FALSE;
                     amountIsNegativeOrZero = Boolean.TRUE;
                 } else {
-                  if (amountBigInteger.compareTo(Transaction.MIN_NONDUST_OUTPUT) < 0) {
+                  if (amountCoin.compareTo(Transaction.MIN_NONDUST_OUTPUT) < 0) {
                     amountValidatesOk = Boolean.FALSE;
                     amountIsTooSmall = Boolean.TRUE;
                   } else {
                     // The fee is worked out in detail later, but we know it will be at least the minimum reference amount.
-                    BigInteger totalSpend = amountBigInteger.add(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE);
-                    BigInteger availableBalance = this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE);
-                    BigInteger estimatedBalance = this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED);
+                    Coin totalSpend = amountCoin.add(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE);
+                    Coin availableBalance = this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE);
+                    Coin estimatedBalance = this.bitcoinController.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED);
 
-                    log.debug("Amount = " + amountBigInteger.toString() + ", fee of at least " + Transaction.REFERENCE_DEFAULT_MIN_TX_FEE.toString()
+                    log.debug("Amount = " + amountCoin.toString() + ", fee of at least " + Transaction.REFERENCE_DEFAULT_MIN_TX_FEE.toString()
                             + ", totalSpend = " + totalSpend.toString() + ", availableBalance = " + availableBalance.toString() + ", estimatedBalance = " + estimatedBalance.toString());
                     if (totalSpend.compareTo(availableBalance) > 0) {
                       // Not enough funds.

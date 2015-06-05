@@ -15,10 +15,10 @@
  */
 package org.multibit.view;
 
-import java.math.BigInteger;
 import java.util.Locale;
 
 import junit.framework.TestCase;
+import org.bitcoinj.core.Coin;
 
 import org.junit.Test;
 import org.multibit.Localiser;
@@ -232,11 +232,11 @@ public class LocaliserTest extends TestCase {
     @Test
     public void testBitcoinValueToStringEnglish() {
         Localiser localiser = new Localiser(new Locale("en"));
-        BigInteger bigPositiveValue = BigInteger.valueOf(1234567890123L);
-        BigInteger positiveValue = BigInteger.valueOf(1234567890);
+        Coin bigPositiveValue = Coin.valueOf(1234567890123L);
+        Coin positiveValue = Coin.valueOf(1234567890);
         
-        BigInteger bigNegativeValue = BigInteger.valueOf(-1234567890123L);
-        BigInteger negativeValue = BigInteger.valueOf(-1234567890);
+        Coin bigNegativeValue = Coin.valueOf(-1234567890123L);
+        Coin negativeValue = Coin.valueOf(-1234567890);
         
         assertEquals("12,345.67890123", localiser.bitcoinValueToString(bigPositiveValue, false, false));    
         assertEquals("12,345.67890123 BTC", localiser.bitcoinValueToString(bigPositiveValue, true, false));    
@@ -258,20 +258,20 @@ public class LocaliserTest extends TestCase {
         assertEquals("-12.3456789 BTC", localiser.bitcoinValueToString(negativeValue, true, true));    
         assertEquals("-12.3456789", localiser.bitcoinValueToString(negativeValue, false, true));    
 
-        assertEquals("0", localiser.bitcoinValueToString(BigInteger.ZERO, false, false));    
-        assertEquals("0 BTC", localiser.bitcoinValueToString(BigInteger.ZERO, true, false));    
-        assertEquals("", localiser.bitcoinValueToString(BigInteger.ZERO, true, true));    
-        assertEquals("", localiser.bitcoinValueToString(BigInteger.ZERO, false, true));    
+        assertEquals("0", localiser.bitcoinValueToString(Coin.ZERO, false, false));    
+        assertEquals("0 BTC", localiser.bitcoinValueToString(Coin.ZERO, true, false));    
+        assertEquals("", localiser.bitcoinValueToString(Coin.ZERO, true, true));    
+        assertEquals("", localiser.bitcoinValueToString(Coin.ZERO, false, true));    
     }
     
     @Test
     public void testBitcoinValueToStringGerman() {
         Localiser localiser = new Localiser(new Locale("de"));
-        BigInteger bigPositiveValue = BigInteger.valueOf(1234567890123L);
-        BigInteger positiveValue = BigInteger.valueOf(1234567890);
+        Coin bigPositiveValue = Coin.valueOf(1234567890123L);
+        Coin positiveValue = Coin.valueOf(1234567890);
         
-        BigInteger bigNegativeValue = BigInteger.valueOf(-1234567890123L);
-        BigInteger negativeValue = BigInteger.valueOf(-1234567890);
+        Coin bigNegativeValue = Coin.valueOf(-1234567890123L);
+        Coin negativeValue = Coin.valueOf(-1234567890);
         
         assertEquals("12.345,67890123", localiser.bitcoinValueToString(bigPositiveValue, false, false));    
         assertEquals("12.345,67890123 BTC", localiser.bitcoinValueToString(bigPositiveValue, true, false));    
@@ -293,9 +293,9 @@ public class LocaliserTest extends TestCase {
         assertEquals("-12,3456789 BTC", localiser.bitcoinValueToString(negativeValue, true, true));    
         assertEquals("-12,3456789", localiser.bitcoinValueToString(negativeValue, false, true));    
 
-        assertEquals("0", localiser.bitcoinValueToString(BigInteger.ZERO, false, false));    
-        assertEquals("0 BTC", localiser.bitcoinValueToString(BigInteger.ZERO, true, false));    
-        assertEquals("", localiser.bitcoinValueToString(BigInteger.ZERO, true, true));    
-        assertEquals("", localiser.bitcoinValueToString(BigInteger.ZERO, false, true));    
+        assertEquals("0", localiser.bitcoinValueToString(Coin.ZERO, false, false));    
+        assertEquals("0 BTC", localiser.bitcoinValueToString(Coin.ZERO, true, false));    
+        assertEquals("", localiser.bitcoinValueToString(Coin.ZERO, true, true));    
+        assertEquals("", localiser.bitcoinValueToString(Coin.ZERO, false, true));    
     }
 }

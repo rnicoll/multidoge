@@ -28,6 +28,7 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
+import org.bitcoinj.core.Coin;
 
 import org.joda.money.BigMoney;
 import org.slf4j.Logger;
@@ -260,12 +261,13 @@ public class Localiser {
      * Returns the given value in nanocoins as a 0.12345678 type string.
      * This function is localised. 
      **/
-    public String bitcoinValueToString(BigInteger value, boolean addUnit, boolean blankZero) {
-        if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
+
+    public String bitcoinValueToString(Coin value, boolean addUnit, boolean blankZero) {
+        if (blankZero && value.longValue() == 0) {
             return "";
         }
 
-        boolean negative = value.compareTo(BigInteger.ZERO) < 0;
+        boolean negative = value.longValue() < 0;
         if (negative) {
             value = value.negate();
         }
@@ -278,27 +280,29 @@ public class Localiser {
         if (value == null) {
             throw new IllegalArgumentException("Value cannot be null");
         }
-                
-        BigDecimal valueInBTC = new BigDecimal(value).divide(new BigDecimal(Utils.COIN));
+
+        BigDecimal valueInBTC = BigDecimal.valueOf(value.longValue());
+        valueInBTC = valueInBTC.divide(BigDecimal.valueOf(Coin.COIN.longValue()));
         numberFormat.setGroupingUsed(false);
-        toReturn = toReturn + numberFormat.format(valueInBTC.doubleValue());
+        toReturn = toReturn + numberFormat.format(valueInBTC);
         numberFormat.setGroupingUsed(true);
 
         if (addUnit) {
             toReturn = toReturn + " " + getString("sendBitcoinPanel.amountUnitLabel");
         }
-        return toReturn;     
+        return toReturn;
     }
+
     /**
      * Returns the given value in nanocoins as a 0.12345678 type string.
      * This function is NOT localised. 
      **/
-    public String bitcoinValueToStringNotLocalised(BigInteger value, boolean addUnit, boolean blankZero) {
-        if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
+    public String bitcoinValueToStringNotLocalised(Coin value, boolean addUnit, boolean blankZero) {
+        if (blankZero && value.longValue() == 0) {
             return "";
         }
 
-        boolean negative = value.compareTo(BigInteger.ZERO) < 0;
+        boolean negative = value.longValue() < 0;
         if (negative) {
             value = value.negate();
         }
@@ -311,10 +315,11 @@ public class Localiser {
         if (value == null) {
             throw new IllegalArgumentException("Value cannot be null");
         }
-                
-        BigDecimal valueInBTC = new BigDecimal(value).divide(new BigDecimal(Utils.COIN));
+
+        BigDecimal valueInBTC = BigDecimal.valueOf(value.longValue());
+        valueInBTC = valueInBTC.divide(BigDecimal.valueOf(Coin.COIN.longValue()));
         numberFormatNotLocalised.setGroupingUsed(false);
-        toReturn = toReturn + numberFormatNotLocalised.format(valueInBTC.doubleValue());
+        toReturn = toReturn + numberFormatNotLocalised.format(valueInBTC);
         numberFormatNotLocalised.setGroupingUsed(true);
 
         if (addUnit) {

@@ -199,9 +199,9 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     log.debug("bitcoinj wallet.1 = " + bitcoinj);
                     
                     Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
-                    if (bitcoinj != null && bitcoinj.getKeychain() != null) {
+                    if (bitcoinj != null && bitcoinj.getImportedKeys() != null) {
                         log.debug("Found " + bitcoinj.getKeychainSize() + " keys to import.1");
-                        for (ECKey key : bitcoinj.getKeychain()) {
+                        for (ECKey key : bitcoinj.getImportedKeys()) {
                             privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
                         }
                     } else {
@@ -223,9 +223,9 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                 log.debug("bitcoinj wallet.2 = " + bitcoinj);
                 
                 Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
-                if (bitcoinj != null && bitcoinj.getKeychain() != null) {
+                if (bitcoinj != null && bitcoinj.getImportedKeys() != null) {
                     log.debug("Found " + bitcoinj.getKeychainSize() + " keys to import.2");
-                    for (ECKey key : bitcoinj.getKeychain()) {
+                    for (ECKey key : bitcoinj.getImportedKeys()) {
                         privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
                     }
                 } else {
@@ -298,7 +298,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
                     try {
                         if (walletToAddKeysTo != null) {
-                            synchronized (walletToAddKeysTo.getKeychain()) {
+                            synchronized (walletToAddKeysTo.getImportedKeys()) {
                                 // Work out what the unencrypted private keys are.
                                 KeyCrypter walletKeyCrypter = walletToAddKeysTo.getKeyCrypter();
                                 KeyParameter aesKey = null;
@@ -308,15 +308,15 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                                     }
                                     aesKey = walletKeyCrypter.deriveKey(CharBuffer.wrap(walletPassword));
                                 }
-                                for (ECKey ecKey : walletToAddKeysTo.getKeychain()) {
+                                for (ECKey ecKey : walletToAddKeysTo.getImportedKeys()) {
                                     if (keyEncryptionRequired) {
                                         if (ecKey.getEncryptedPrivateKey() == null
-                                                || ecKey.getEncryptedPrivateKey().getEncryptedBytes() == null
-                                                || ecKey.getEncryptedPrivateKey().getEncryptedBytes().length == 0) {
+                                                || ecKey.getEncryptedPrivateKey().encryptedBytes == null
+                                                || ecKey.getEncryptedPrivateKey().encryptedBytes.length == 0) {
 
                                             log.error("Missing encrypted private key bytes for key " + ecKey.toString()
                                                     + ", enc.priv = "
-                                                    + Utils.bytesToHexString(ecKey.getEncryptedPrivateKey().getEncryptedBytes()));
+                                                    + Utils.HEX.encode(ecKey.getEncryptedPrivateKey().encryptedBytes));
                                         } else {
                                             byte[] decryptedPrivateKey = ecKey.getKeyCrypter().decrypt(
                                                     ecKey.getEncryptedPrivateKey(), aesKey);
@@ -344,9 +344,9 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                                                     ECKey encryptedKey = new ECKey(walletKeyCrypter.encrypt(
                                                             keyToAdd.getPrivKeyBytes(), aesKey), keyToAdd.getPubKey(),
                                                             walletKeyCrypter);
-                                                    walletToAddKeysTo.addKey(encryptedKey);
+                                                    walletToAddKeysTo.importKey(encryptedKey);
                                                 } else {
-                                                    walletToAddKeysTo.addKey(keyToAdd);
+                                                    walletToAddKeysTo.importKey(keyToAdd);
                                                 }
 
                                                 // Update earliest transaction date.

@@ -192,7 +192,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                         FileHandler fileHandler = finalController.getFileHandler();
                         
                         synchronized (finalPerWalletModelData.getWallet()) {
-                            finalPerWalletModelData.getWallet().addKeys(newKeys);
+                            finalPerWalletModelData.getWallet().importKeys(newKeys);
                         }
                         
                         // Add keys to address book.

@@ -99,7 +99,7 @@ public class QRCodeGenerator {
                 if (amount != null && !"".equals(amount)) {
                     CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amount);
                     if (converterResult.isBtcMoneyValid()) {
-                        bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, converterResult.getBtcMoney().getAmount().toBigInteger(), label, null);
+                        bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, converterResult.getBtcMoney(), label, null);
                     } else {
                        // No parsable amount - show nothing.  
                     }                } else {

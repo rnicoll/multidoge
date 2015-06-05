@@ -15,12 +15,12 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import com.google.dogecoin.core.Address;
-import com.google.dogecoin.core.AddressFormatException;
-import com.google.dogecoin.core.Utils;
-import com.google.dogecoin.core.Wallet.SendRequest;
-import com.google.dogecoin.core.WrongNetworkException;
-import com.google.dogecoin.crypto.KeyCrypterException;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.AddressFormatException;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.core.Wallet.SendRequest;
+import org.bitcoinj.core.WrongNetworkException;
+import org.bitcoinj.crypto.KeyCrypterException;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -36,6 +36,8 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.math.BigInteger;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.InsufficientMoneyException;
 
 /**
  * This {@link Action} shows the send dogecoin confirm dialog or validation dialog on an attempted spend.
@@ -86,14 +88,20 @@ public class SendBitcoinConfirmAction extends MultiBitSubmitAction {
                 sendAddressObject = new Address(bitcoinController.getModel().getNetworkParameters(), sendAddress);
                 SendRequest sendRequest = SendRequest.to(sendAddressObject, Utils.toNanoCoins(sendAmount));
                 sendRequest.ensureMinRequiredFee = true;
-                sendRequest.fee = BigInteger.ZERO;
+                sendRequest.fee = Coin.ZERO;
                 sendRequest.feePerKb = BitcoinModel.SEND_FEE_PER_KB_DEFAULT;
 
                 // Note - Request is populated with the AES key in the SendBitcoinNowAction after the user has entered it on the SendBitcoinConfirm form.
 
                 // Complete it (which works out the fee) but do not sign it yet.
                 log.debug("Just about to complete the tx (and calculate the fee)...");
-                boolean completedOk = bitcoinController.getModel().getActiveWallet().completeTx(sendRequest, false);
+                boolean completedOk;
+                try {
+                    bitcoinController.getModel().getActiveWallet().completeTx(sendRequest);
+                    completedOk = true;
+                } catch(InsufficientMoneyException ex) {
+                    completedOk = false;
+                }
                 log.debug("The fee after completing the transaction was " + sendRequest.fee);
                 if (completedOk) {
                     // There is enough money.

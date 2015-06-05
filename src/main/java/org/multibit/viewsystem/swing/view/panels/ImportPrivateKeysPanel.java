@@ -73,7 +73,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
-import com.google.dogecoin.crypto.KeyCrypterException;
+import org.bitcoinj.crypto.KeyCrypterException;
 
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
@@ -1032,7 +1032,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
                         wallet.setTemporySecondPassword(secondPassword);
 
                         int numberOfKeys = 0;
-                        if (wallet.getBitcoinJWallet() != null && wallet.getBitcoinJWallet().getKeychain() != null) {
+                        if (wallet.getBitcoinJWallet() != null && wallet.getBitcoinJWallet().getImportedKeys() != null) {
                             numberOfKeys = wallet.getBitcoinJWallet().getKeychainSize();
                         }
                         numberOfKeysLabel.setText("" + numberOfKeys);
@@ -1051,7 +1051,7 @@ public class ImportPrivateKeysPanel extends JPanel implements Viewable, WalletBu
                     MyWallet wallet = new MyWallet(importFileContents);
 
                     int numberOfKeys = 0;
-                    if (wallet.getBitcoinJWallet() != null && wallet.getBitcoinJWallet().getKeychain() != null) {
+                    if (wallet.getBitcoinJWallet() != null && wallet.getBitcoinJWallet().getImportedKeys() != null) {
                         numberOfKeys = wallet.getBitcoinJWallet().getKeychainSize();
                     }
                     numberOfKeysLabel.setText("" + numberOfKeys);

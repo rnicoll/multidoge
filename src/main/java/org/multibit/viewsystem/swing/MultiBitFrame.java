@@ -72,6 +72,8 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Properties;
 import java.util.Timer;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.script.Script;
 
 
 /*
@@ -1482,12 +1484,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     @Override
-    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+    public void onCoinsReceived(Wallet wallet, Transaction transaction, Coin prevBalance, Coin newBalance) {
         fireDataChangedUpdateLater(DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED);
     }
 
     @Override
-    public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+    public void onCoinsSent(Wallet wallet, Transaction transaction, Coin prevBalance, Coin newBalance) {
         fireDataChangedUpdateLater(DisplayHint.WALLET_TRANSACTIONS_HAVE_CHANGED);
     }
 
@@ -1505,7 +1507,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
             ShowTransactionsPanel.updateTransactions(); 
         } else if (controller.getCurrentView() == View.SEND_BITCOIN_VIEW) {
-            final int numberOfPeers = (transaction == null || transaction.getConfidence() == null) ? 0 : transaction.getConfidence().getBroadcastByCount();
+            final int numberOfPeers = (transaction == null || transaction.getConfidence() == null) ? 0 : transaction.getConfidence().getBroadcastBy().size();
             //log.debug("numberOfPeers = " + numberOfPeers);
             final Sha256Hash transactionHash = (transaction == null) ? null : transaction.getHash();
             //log.debug((transaction != null && transaction.getConfidence() != null) ? transaction.getConfidence().toString() : "No transaction confidence for tx");
@@ -1602,8 +1604,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
     
     public void updateHeader() {
-        final BigInteger finalEstimatedBalance = this.bitcoinController.getModel().getActiveWalletEstimatedBalance();
-        final BigInteger finalAvailableToSpend = this.bitcoinController.getModel().getActiveWalletAvailableBalance();
+        final Coin finalEstimatedBalance = this.bitcoinController.getModel().getActiveWalletEstimatedBalance();
+        final Coin finalAvailableToSpend = this.bitcoinController.getModel().getActiveWalletAvailableBalance();
         final boolean filesHaveBeenChangeByAnotherProcess = this.bitcoinController.getModel().getActivePerWalletModelData() != null && this.bitcoinController.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess();
         final boolean isBusy = this.bitcoinController.getModel().getActivePerWalletModelData().isBusy();
         
@@ -1618,7 +1620,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
     }
         
-    private void updateHeaderOnSwingThread(final boolean filesHaveBeenChangedByAnotherProcess, final BigInteger estimatedBalance, final BigInteger availableToSpend, final boolean isBusy, final String syncMessage, final double syncPercent) {
+    private void updateHeaderOnSwingThread(final boolean filesHaveBeenChangedByAnotherProcess, final Coin estimatedBalance,
+            final Coin availableToSpend, final boolean isBusy, final String syncMessage, final double syncPercent) {
         if (filesHaveBeenChangedByAnotherProcess) {
             // Files have been changed by another process - blank totals
             // and put 'Updates stopped' message.
@@ -1869,6 +1872,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     @Override
-    public void onKeysAdded(Wallet wallet, List<ECKey> keys) {
+    public void onScriptsChanged(Wallet wallet, List<Script> scripts, boolean isAddingScripts) {
+        
+    }
+
+    @Override
+    public void onKeysAdded(List<ECKey> keys) {
+        
     }
 }

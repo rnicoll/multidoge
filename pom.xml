@@ -674,23 +674,12 @@
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.google</groupId>
-            <artifactId>dogecoinj</artifactId>
-            <version>${bitcoinj.version}</version>
-            <scope>compile</scope>
-        </dependency>
          <dependency>
             <groupId>com.xeiam.xchange</groupId>
             <artifactId>xchange-core</artifactId>
             <version>${xchange.version}</version>
         </dependency>
         <!-- XChange MtGox exchange support -->
-        <dependency>
-            <groupId>com.xeiam.xchange</groupId>
-            <artifactId>xchange-mtgox</artifactId>
-            <version>${xchange.version}</version>
-        </dependency>
         <!-- XChange VirtEx exchange support -->
         <dependency>
             <groupId>com.xeiam.xchange</groupId>
@@ -788,11 +777,14 @@
             <version>1.4.0</version>
         </dependency>
         <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>javafx</artifactId>
-            <version>2.2.40</version>
-            <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
-            <scope>system</scope>
+            <groupId>org.bitcoinj</groupId>
+            <artifactId>bitcoinj-core</artifactId>
+            <version>0.13-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.altcoinj</groupId>
+            <artifactId>altcoinj</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
@@ -819,7 +811,7 @@
         <bitcoinj.version>0.10.3-MB-ALICE</bitcoinj.version>
 
         <!-- Version of XChange to use (multiple uses) -->
-        <xchange.version>2.0.0-SNAPSHOT</xchange.version>
+        <xchange.version>2.0.0</xchange.version>
 
         <!-- Version of spongycastle to use -->
         <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>

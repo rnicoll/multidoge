@@ -28,6 +28,7 @@ import javax.swing.table.AbstractTableModel;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
+import org.bitcoinj.core.Coin;
 
 
 
@@ -110,12 +111,12 @@ public class WalletTableModel extends AbstractTableModel {
             return walletDataRow.getDescription();
         case 3:
             // Amount in BTC
-            BigInteger debitAmount = walletDataRow.getDebit();
-            if (debitAmount != null && debitAmount.compareTo(BigInteger.ZERO) > 0) {
+            Coin debitAmount = walletDataRow.getDebit();
+            if (debitAmount != null && debitAmount.compareTo(Coin.ZERO) > 0) {
                 return controller.getLocaliser().bitcoinValueToString(debitAmount.negate(), false, true);
             }
 
-            BigInteger creditAmount = walletDataRow.getCredit();
+            Coin creditAmount = walletDataRow.getCredit();
             if (creditAmount != null) {
                 return controller.getLocaliser().bitcoinValueToString(creditAmount, false, true);
             }
@@ -123,7 +124,7 @@ public class WalletTableModel extends AbstractTableModel {
             return null;         
         case 4:
             // Amount in fiat
-            if (walletDataRow.getDebit() != null  && walletDataRow.getDebit().compareTo(BigInteger.ZERO) > 0) {
+            if (walletDataRow.getDebit() != null  && walletDataRow.getDebit().compareTo(Coin.ZERO) > 0) {
                 Money debitAmountFiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(walletDataRow.getDebit());
                 if (debitAmountFiat != null) {
                     return CurrencyConverter.INSTANCE.getFiatAsLocalisedString(debitAmountFiat.negated(), false, false);

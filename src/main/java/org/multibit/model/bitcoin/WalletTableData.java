@@ -15,10 +15,10 @@
  */
 package org.multibit.model.bitcoin;
 
-import java.math.BigInteger;
 import java.util.Date;
+import org.bitcoinj.core.Coin;
 
-import com.google.dogecoin.core.Transaction;
+import org.bitcoinj.core.Transaction;
 
 /**
  * Class used to store the data in the Transactions table in a quick to access data form.
@@ -43,8 +43,8 @@ public class WalletTableData {
     // TODO Consider using Joda Time (java.util.Date is obsolete)
     private Date date;
     private String description;
-    private BigInteger debit;
-    private BigInteger credit;
+    private Coin debit;
+    private Coin credit;
 
     public WalletTableData(Transaction transaction) {
         this.transaction = transaction;
@@ -91,19 +91,19 @@ public class WalletTableData {
         this.description = description;
     }
 
-    public BigInteger getDebit() {
+    public Coin getDebit() {
         return debit;
     }
 
-    public void setDebit(BigInteger debit) {
+    public void setDebit(Coin debit) {
         this.debit = debit;
     }
 
-    public BigInteger getCredit() {
+    public Coin getCredit() {
         return credit;
     }
 
-    public void setCredit(BigInteger credit) {
+    public void setCredit(Coin credit) {
         this.credit = credit;
     }
 }

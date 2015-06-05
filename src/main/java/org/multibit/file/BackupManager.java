@@ -28,12 +28,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
-import com.google.dogecoin.core.Utils;
-import com.google.dogecoin.core.Wallet;
-import com.google.dogecoin.crypto.EncryptedPrivateKey;
-import com.google.dogecoin.crypto.KeyCrypter;
-import com.google.dogecoin.crypto.KeyCrypterException;
-import com.google.dogecoin.crypto.KeyCrypterScrypt;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.core.Wallet;
+import org.bitcoinj.crypto.EncryptedData;
+import org.bitcoinj.crypto.KeyCrypter;
+import org.bitcoinj.crypto.KeyCrypterException;
+import org.bitcoinj.crypto.KeyCrypterScrypt;
 import com.google.protobuf.ByteString;
 
 
@@ -321,7 +321,7 @@ public enum BackupManager {
         .setSalt(ByteString.copyFrom(salt));
         ScryptParameters scryptParameters = scryptParametersBuilder.build();
         KeyCrypterScrypt keyCrypter = new KeyCrypterScrypt(scryptParameters);
-        EncryptedPrivateKey encryptedData = keyCrypter.encrypt(sourceFileUnencrypted, keyCrypter.deriveKey(passwordToUse));
+        EncryptedData encryptedData = keyCrypter.encrypt(sourceFileUnencrypted, keyCrypter.deriveKey(passwordToUse));
         
         // The format of the encrypted data is:
         // 7 magic bytes 'mendoza' in ASCII.
@@ -339,11 +339,11 @@ public enum BackupManager {
             fileOutputStream.write(FILE_ENCRYPTED_VERSION_NUMBER);
             
             fileOutputStream.write(salt); // 8 bytes.
-            fileOutputStream.write(encryptedData.getInitialisationVector()); // 16 bytes.
-            System.out.println(Utils.bytesToHexString(encryptedData.getInitialisationVector()));
+            fileOutputStream.write(encryptedData.initialisationVector); // 16 bytes.
+            System.out.println(Utils.HEX.encode(encryptedData.initialisationVector));
             
-            fileOutputStream.write(encryptedData.getEncryptedBytes());
-            System.out.println(Utils.bytesToHexString(encryptedData.getEncryptedBytes()));
+            fileOutputStream.write(encryptedData.encryptedBytes);
+            System.out.println(Utils.HEX.encode(encryptedData.encryptedBytes));
         } finally {
             if (fileOutputStream != null) {
                 fileOutputStream.flush();
@@ -382,21 +382,21 @@ public enum BackupManager {
 
         // Extract the salt.
         byte[] salt = Arrays.copyOfRange(sourceFileEncrypted, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH);
-        //System.out.println("FileHandler - salt = " + Utils.bytesToHexString(salt));
+        //System.out.println("FileHandler - salt = " + Utils.HEX.encode(salt));
         
         // Extract the IV.
         byte[] iv = Arrays.copyOfRange(sourceFileEncrypted, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH , ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH + KeyCrypterScrypt.BLOCK_LENGTH);
-        //System.out.println("FileHandler - iv = " + Utils.bytesToHexString(iv));
+        //System.out.println("FileHandler - iv = " + Utils.HEX.encode(iv));
         
         // Extract the encrypted bytes.
         byte[] encryptedBytes = Arrays.copyOfRange(sourceFileEncrypted, ENCRYPTED_FILE_FORMAT_MAGIC_BYTES.length + 1 + KeyCrypterScrypt.SALT_LENGTH + KeyCrypterScrypt.BLOCK_LENGTH , sourceFileEncrypted.length);
-        //System.out.println("FileHandler - encryptedBytes = " + Utils.bytesToHexString(encryptedBytes));
+        //System.out.println("FileHandler - encryptedBytes = " + Utils.HEX.encode(encryptedBytes));
          
         // Decrypt the data.
         Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
         ScryptParameters scryptParameters = scryptParametersBuilder.build();
         KeyCrypter keyCrypter = new KeyCrypterScrypt(scryptParameters);
-        EncryptedPrivateKey encryptedPrivateKey = new EncryptedPrivateKey(iv, encryptedBytes);
+        EncryptedData encryptedPrivateKey = new EncryptedData(iv, encryptedBytes);
         return keyCrypter.decrypt(encryptedPrivateKey, keyCrypter.deriveKey(passwordToUse));
     }
     

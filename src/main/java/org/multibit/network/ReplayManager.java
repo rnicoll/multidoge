@@ -16,10 +16,10 @@
 
 package org.multibit.network;
 
-import com.google.dogecoin.core.CheckpointManager;
-import com.google.dogecoin.core.PeerGroup;
-import com.google.dogecoin.core.StoredBlock;
-import com.google.dogecoin.store.BlockStoreException;
+import org.bitcoinj.core.CheckpointManager;
+import org.bitcoinj.core.PeerGroup;
+import org.bitcoinj.core.StoredBlock;
+import org.bitcoinj.store.BlockStoreException;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -133,7 +133,7 @@ public enum ReplayManager {
             false, 0);
     MessageManager.INSTANCE.addMessage(message);
 
-    controller.getMultiBitService().getPeerGroup().stopAndWait();
+    controller.getMultiBitService().getPeerGroup().stop();
     log.debug("PeerGroup is now stopped.");
 
     // Reset UI to zero peers.

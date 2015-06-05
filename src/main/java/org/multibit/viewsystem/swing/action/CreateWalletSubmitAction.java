@@ -170,7 +170,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
                 Wallet newWallet = new Wallet(this.bitcoinController.getModel().getNetworkParameters());
 
                 ECKey newKey = new ECKey();
-                newWallet.addKey(newKey);
+                newWallet.importKey(newKey);
                 WalletData perWalletModelData = new WalletData();
                 perWalletModelData.setWalletInfo(new WalletInfoData(newWalletFilename, newWallet, MultiBitWalletVersion.PROTOBUF));
                 perWalletModelData.setWallet(newWallet);

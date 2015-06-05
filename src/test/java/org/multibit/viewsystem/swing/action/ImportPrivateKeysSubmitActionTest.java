@@ -30,7 +30,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
-import com.google.dogecoin.core.ECKey;
+import org.bitcoinj.core.ECKey;
 import org.bitcoinj.wallet.Protos.Wallet.EncryptionType;
 
 public class ImportPrivateKeysSubmitActionTest extends TestCase {   
@@ -63,7 +63,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         importAction.setPerformReplay(false);
 
         assertNotNull("importAction was not created successfully", importAction);
-        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
+        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getImportedKeys().size());
         assertTrue("Wallet password is enabled when it should not be", !importPanel.isWalletPasswordFieldEnabled());
 
          // Execute - this is with an unencrypted wallet and default settings.
@@ -115,7 +115,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         importAction.setPerformReplay(false);
 
         assertNotNull("importAction was not created successfully", importAction);
-        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
+        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getImportedKeys().size());
         assertTrue("Wallet password is enabled when it should not be", !importPanel.isWalletPasswordFieldEnabled());
         
          // Execute - this is with an unencrypted wallet and default settings.
@@ -176,7 +176,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         importAction.setPerformReplay(false);
 
         assertNotNull("importAction was not created successfully", importAction);
-        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
+        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getImportedKeys().size());
         assertTrue("Wallet password is not enabled when it should be", importPanel.isWalletPasswordFieldEnabled());
 
          // Execute - this is with an encrypted wallet and default settings.
@@ -243,7 +243,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         importAction.setPerformReplay(false);
 
         assertNotNull("importAction was not created successfully", importAction);
-        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
+        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getImportedKeys().size());
         assertTrue("Wallet password is not enabled when it should be", importPanel.isWalletPasswordFieldEnabled());
         
          // Execute - this is with an encrypted wallet and default settings.
@@ -324,7 +324,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         // Check every key on the expected list is now on the wallet.
         for (int i = 0; i < PrivateKeysHandlerTest.EXPECTED_ADDRESSES_FOR_TEST1_WALLET.length; i++) {
             boolean foundIt = false;
-            for (ECKey ecKey : controller.getModel().getActiveWallet().getKeychain()) {
+            for (ECKey ecKey : controller.getModel().getActiveWallet().getImportedKeys()) {
                 if (PrivateKeysHandlerTest.EXPECTED_ADDRESSES_FOR_TEST1_WALLET[i].equals(ecKey.toAddress(controller.getModel().getNetworkParameters()).toString())) {
                     foundIt = true;
                     break;

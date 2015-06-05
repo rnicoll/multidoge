@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import javax.swing.SwingUtilities;
+import org.bitcoinj.core.Coin;
 import org.multibit.controller.Controller;
 import org.multibit.model.exchange.ExchangeData;
 import org.multibit.model.exchange.ExchangeModel;
@@ -317,11 +318,11 @@ public enum CurrencyConverter {
      * @param bitcoinAmountInSatoshi in satoshis
      * @return equivalent fiat amount
      */
-    public Money convertFromBTCToFiat(BigInteger bitcoinAmountInSatoshi) {
+    public Money convertFromBTCToFiat(Coin bitcoinAmountInSatoshi) {
         if (rate == null) {
             return null;
         } else {
-            Money bitcoin = Money.of(BITCOIN_CURRENCY_UNIT, new BigDecimal(bitcoinAmountInSatoshi));
+            Money bitcoin = Money.of(BITCOIN_CURRENCY_UNIT, new BigDecimal(bitcoinAmountInSatoshi.longValue()));
             
             Money fiatAmount = null;
             if (rateDividedByNumberOfSatoshiInOneBitcoin != null) {
@@ -356,7 +357,7 @@ public enum CurrencyConverter {
                 
                 CurrencyConverterResult result = new CurrencyConverterResult();
                 result.setBtcMoneyValid(true);
-                result.setBtcMoney(btcAmount);
+                result.setBtcMoney(Coin.valueOf(btcAmount.getAmountMajorLong()));
                 result.setFiatMoneyValid(true);
                 result.setFiatMoney(fiatMoney);
                 return result;    
@@ -490,10 +491,10 @@ public enum CurrencyConverter {
         return toReturn;
     }
     
-    public String getBTCAsLocalisedString(Money btcMoney) {
+    public String getBTCAsLocalisedString(Coin btcMoney) {
         DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
         formatter.setMaximumFractionDigits(NUMBER_OF_DECIMAL_POINTS_IN_A_BITCOIN);
-        String btcString = formatter.format(btcMoney.getAmount().divide(new BigDecimal(NUMBER_OF_SATOSHI_IN_ONE_BITCOIN)));
+        String btcString = formatter.format(BigDecimal.valueOf(btcMoney.longValue()).divide(new BigDecimal(NUMBER_OF_SATOSHI_IN_ONE_BITCOIN)));
         return btcString;
     }
     
@@ -568,7 +569,7 @@ public enum CurrencyConverter {
             btcAmount = Money.of(BITCOIN_CURRENCY_UNIT, parsedBTC);
             CurrencyConverterResult result = new CurrencyConverterResult();
             result.setBtcMoneyValid(true);
-            result.setBtcMoney(btcAmount);
+            result.setBtcMoney(Coin.valueOf(btcAmount.getAmountMajorLong()));
             return result; 
         } catch (ParseException pe) {
             log.debug("parseToBTC: " + pe.getClass().getName() + " " + pe.getMessage());
@@ -606,8 +607,7 @@ public enum CurrencyConverter {
         if (btcAsString != null && !"".equals(btcAsString)) {
             if (getRate() != null && isShowingFiat()) {
                 if (converterResult.isBtcMoneyValid()) {
-                    Money fiat = convertFromBTCToFiat(converterResult.getBtcMoney().getAmount()
-                            .toBigInteger());
+                    Money fiat = convertFromBTCToFiat(converterResult.getBtcMoney());
                     prettyPrint = prettyPrint + getFiatAsLocalisedString(fiat, true, true);
                 }
             }

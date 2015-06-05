@@ -127,7 +127,7 @@ public class SignMessageSubmitAction extends MultiBitSubmitAction implements Wal
             
             // Find the ECKey corresponding to the signing address.
             Wallet activeWallet = bitcoinController.getModel().getActiveWallet();
-            Iterable<ECKey> keychain = activeWallet.getKeys();
+            Iterable<ECKey> keychain = activeWallet.getImportedKeys();
             Iterator<ECKey> iterator = keychain.iterator();
             ECKey signingKey = null;
             while (iterator.hasNext()) {

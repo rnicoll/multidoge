@@ -143,7 +143,7 @@ public class SendBitcoinConfirmPanel extends JPanel implements WalletBusyListene
 
         String fee = "0";
         if (sendRequest != null) {
-            fee = Utils.bitcoinValueToPlainString(sendRequest.fee);
+            fee = sendRequest.fee.toPlainString();
         }
 
         String sendFeeLocalised = CurrencyConverter.INSTANCE.prettyPrint(fee);

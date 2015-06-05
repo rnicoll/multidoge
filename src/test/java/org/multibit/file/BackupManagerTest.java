@@ -38,13 +38,14 @@ import org.multibit.store.MultiBitWalletVersion;
 import org.spongycastle.crypto.params.KeyParameter;
 import org.spongycastle.util.Arrays;
 
-import com.google.dogecoin.core.ECKey;
-import com.google.dogecoin.core.NetworkParameters;
-import com.google.dogecoin.core.Utils;
-import com.google.dogecoin.core.Wallet;
-import com.google.dogecoin.crypto.KeyCrypter;
-import com.google.dogecoin.crypto.KeyCrypterScrypt;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.core.Wallet;
+import org.bitcoinj.crypto.KeyCrypter;
+import org.bitcoinj.crypto.KeyCrypterScrypt;
 import com.google.protobuf.ByteString;
+import org.bitcoinj.wallet.KeyChainGroup;
 
 public class BackupManagerTest extends TestCase {
     private static final String TEST_FILE_COPY_AND_ENCRYPT = "testFileCopyAndEncrypt";
@@ -84,11 +85,11 @@ public class BackupManagerTest extends TestCase {
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
         // Create a new protobuf wallet.
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet());
+        Wallet newWallet = new Wallet(org.altcoinj.params.DogecoinMainNetParams.get());
         ECKey newKey = new ECKey();
-        newWallet.getKeychain().add(newKey);
+        newWallet.getImportedKeys().add(newKey);
         newKey = new ECKey();
-        newWallet.getKeychain().add(newKey);
+        newWallet.getImportedKeys().add(newKey);
         WalletData perWalletModelData = new WalletData();
         WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, newWallet, MultiBitWalletVersion.PROTOBUF_ENCRYPTED);
         
@@ -148,10 +149,10 @@ public class BackupManagerTest extends TestCase {
         assertNotNull(wallet);
         assertEquals("Wrong number of private keys in decrypted wallet file", 3, wallet.getKeychainSize());
         
-        List<ECKey> keys = wallet.getKeychain();
-        assertEquals("Wrong private key 0", "0ec932ea4f6b305247c12c0a4fb310d839a688ac0011d69724e6a32bc35fcda8", Utils.bytesToHexString(keys.get(0).getPrivKeyBytes()));
-        assertEquals("Wrong private key 1", "02ac2c94e44fc2edab9585111480d6d438ebe8c96faf92e561957a48d2bbdacc", Utils.bytesToHexString(keys.get(1).getPrivKeyBytes()));
-        assertEquals("Wrong private key 2", "b01a936b78b6a649ea0ede2182eb73629d5ca3200d36a48b1006eb6729c1bc15", Utils.bytesToHexString(keys.get(2).getPrivKeyBytes()));
+        List<ECKey> keys = wallet.getImportedKeys();
+        assertEquals("Wrong private key 0", "0ec932ea4f6b305247c12c0a4fb310d839a688ac0011d69724e6a32bc35fcda8", Utils.HEX.encode(keys.get(0).getPrivKeyBytes()));
+        assertEquals("Wrong private key 1", "02ac2c94e44fc2edab9585111480d6d438ebe8c96faf92e561957a48d2bbdacc", Utils.HEX.encode(keys.get(1).getPrivKeyBytes()));
+        assertEquals("Wrong private key 2", "b01a936b78b6a649ea0ede2182eb73629d5ca3200d36a48b1006eb6729c1bc15", Utils.HEX.encode(keys.get(2).getPrivKeyBytes()));
     }
     
     @Test
@@ -198,11 +199,11 @@ public class BackupManagerTest extends TestCase {
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
         // Create a new protobuf wallet - unencrypted.
-        Wallet newWallet = new Wallet(NetworkParameters.prodNet());
+        Wallet newWallet = new Wallet(org.altcoinj.params.DogecoinMainNetParams.get());
         ECKey newKey = new ECKey();
-        newWallet.getKeychain().add(newKey);
+        newWallet.getImportedKeys().add(newKey);
         newKey = new ECKey();
-        newWallet.getKeychain().add(newKey);
+        newWallet.getImportedKeys().add(newKey);
         WalletData perWalletModelData = new WalletData();
         WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, newWallet, MultiBitWalletVersion.PROTOBUF);
         
@@ -258,8 +259,11 @@ public class BackupManagerTest extends TestCase {
         Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
         ScryptParameters scryptParameters = scryptParametersBuilder.build();
 
+        NetworkParameters params = org.altcoinj.params.DogecoinMainNetParams.get();
         KeyCrypter keyCrypter = new KeyCrypterScrypt(scryptParameters);
-        Wallet encryptedWallet = new Wallet(NetworkParameters.prodNet(), keyCrypter);
+        KeyChainGroup keyChainGroup = new KeyChainGroup(params);
+        // TODO: Encrypt?
+        Wallet encryptedWallet = new Wallet(params, keyChainGroup);
 
         WalletData perWalletModelData = new WalletData();
         WalletInfoData walletInfo = new WalletInfoData(newWalletFilename, encryptedWallet, MultiBitWalletVersion.PROTOBUF);

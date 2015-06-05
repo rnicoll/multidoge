@@ -58,6 +58,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.Timer;
+import org.bitcoinj.core.Coin;
 
 public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyConverterListener {
     private static final long serialVersionUID = 1235108897887842662L;
@@ -711,7 +712,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             // Work out the line describing the number of peers.
             int peers = 0;
             if (confidence != null) {
-                peers = confidence.getBroadcastByCount();
+                peers = confidence.getBroadcastBy().size();
             }
             StringBuilder builder = new StringBuilder();
             if (peers == 0) {
@@ -748,7 +749,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
                 }
             
                 if (confidence.getBroadcastBy() != null) {
-                    int numberOfPeers = confidence.getBroadcastByCount();
+                    int numberOfPeers = confidence.getBroadcastBy().size();
                     if (numberOfPeers >= 4) {
                         return progress0Icon;
                     } else {
@@ -977,7 +978,7 @@ public class ShowTransactionsPanel extends JPanel implements Viewable, CurrencyC
             filler.setOpaque(true);
 
             if (value == null) {
-                pane.setText("\t" + controller.getLocaliser().bitcoinValueToString(BigInteger.ZERO, false, false));
+                pane.setText("\t" + controller.getLocaliser().bitcoinValueToString(Coin.ZERO, false, false));
             } else {
                 String contents = value.toString();
                 String splitChar;

@@ -16,7 +16,7 @@
 
 package org.multibit.viewsystem.swing.view.walletlist;
 
-import org.bitcoinj.core.DownloadListener;
+import org.bitcoinj.core.DownloadProgressTracker;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;
@@ -40,7 +40,7 @@ import java.util.UUID;
  * implementation does not have to be thread safe.
  * 
  */
-public class SingleWalletPanelDownloadListener extends DownloadListener {
+public class SingleWalletPanelDownloadListener extends DownloadProgressTracker {
     private static final Logger log = LoggerFactory.getLogger(SingleWalletPanelDownloadListener.class);
 
     private static final double DONE_FOR_DOUBLES = 99.99; // not quite 100 per

@@ -51,10 +51,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
-import com.google.dogecoin.core.ECKey;
-import com.google.dogecoin.core.NetworkParameters;
-import com.google.dogecoin.core.Utils;
-import com.google.dogecoin.core.Wallet;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.core.Wallet;
 
 
 
@@ -444,7 +444,7 @@ public enum AlertManager {
             // Find the private key whose Bitcoin address matches the passed in addressPrefix.
             ECKey signingKey = null;
             Wallet wallet = perWalletModelData.getWallet();
-            List<ECKey> keys = wallet.getKeychain();
+            List<ECKey> keys = wallet.getImportedKeys();
             for (ECKey key : keys) {
                 if (key.toAddress(NetworkParameters.prodNet()).toString().toLowerCase().startsWith(addressPrefix.toLowerCase())) {
                     // This is the signing key.
@@ -457,7 +457,7 @@ public enum AlertManager {
                 System.out.println("No signing key could be found with the Bitcoin address prefix of '" + addressPrefix + "'");
             }
             
-            String publicKeyAsHex = Utils.bytesToHexString(signingKey.getPubKey());
+            String publicKeyAsHex = Utils.HEX.encode(signingKey.getPubKey());
 
             KeyParameter keyParameter = wallet.getKeyCrypter().deriveKey(password);
             ECKey decryptedSigningKey = signingKey.decrypt(wallet.getKeyCrypter(), keyParameter);

@@ -16,7 +16,7 @@
 package org.multibit.viewsystem.swing.view.panels;
 
 
-import com.google.dogecoin.core.Transaction;
+import org.bitcoinj.core.Transaction;
 import com.xeiam.xchart.*;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
@@ -41,6 +41,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import org.bitcoinj.core.Coin;
 
 /**
  * The Charts view.
@@ -174,7 +175,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
           for (ChartData chartData : chartDataCollection) {
             if (chartData != null && chartData.getDate() != null && chartData.getValue() != null) {
               xData.add(chartData.getDate());
-              yData.add(chartData.getValue().doubleValue() / NUMBER_OF_SATOSHI_IN_ONE_BTC);
+              yData.add(((double) chartData.getValue().longValue()) / NUMBER_OF_SATOSHI_IN_ONE_BTC);
             }
           }
         }
@@ -289,10 +290,10 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
 
     // Work out balance as running total and filter to just last
     // NUMBER_OF_DAYS_TO_LOOK_BACKs data.
-    BigInteger balance = BigInteger.ZERO;
+    Coin balance = Coin.ZERO;
 
     // The previous datums balance.
-    BigInteger previousBalance = BigInteger.ZERO;
+    Coin previousBalance = Coin.ZERO;
 
     // The previous datums timepoint.
     Date previousDate = null;
@@ -307,7 +308,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
 
       if (allTransactions == null || allTransactions.size() == 0) {
         // At beginning of time window balance was zero
-        chartData.add(new ChartData(new Date(pastInMillis), BigInteger.ZERO));
+        chartData.add(new ChartData(new Date(pastInMillis), Coin.ZERO));
       } else {
         for (Transaction loop : allTransactions) {
           balance = balance.add(loop.getValue(this.bitcoinController.getModel().getActiveWallet()));
@@ -329,7 +330,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
                 } else {
                   // At beginning of time window balance was
                   // zero
-                  chartData.add(new ChartData(new Date(pastInMillis), BigInteger.ZERO));
+                  chartData.add(new ChartData(new Date(pastInMillis), Coin.ZERO));
                 }
                 leftEdgeDataPointAdded = true;
               }
@@ -354,7 +355,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
       // Add in the balance at the end of the time window.
       chartData.add(new ChartData(new Date(DateUtils.nowUtc().getMillis()), balance));
       // log.debug("Last transaction date = " + previousDate + ", chart balance = " + balance + ", wallet balance = " + controller.getModel().getActiveWallet().getBalance());
-    } catch (com.google.dogecoin.core.ScriptException e1) {
+    } catch (org.bitcoinj.core.ScriptException e1) {
       e1.printStackTrace();
     }
 
@@ -402,9 +403,9 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
   static class ChartData {
 
     private Date date;
-    private BigInteger value;
+    private Coin value;
 
-    public ChartData(Date date, BigInteger value) {
+    public ChartData(Date date, Coin value) {
 
       this.date = date;
       this.value = value;
@@ -415,7 +416,7 @@ public class ChartsPanel extends JPanel implements Viewable, ComponentListener {
       return date;
     }
 
-    public BigInteger getValue() {
+    public Coin getValue() {
 
       return value;
     }

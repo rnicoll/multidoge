@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import org.bitcoinj.core.Coin;
 
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
@@ -77,7 +78,7 @@ public class CurrencyConverterTest extends TestCase {
         converter.setCurrencyUnit(CurrencyUnit.of("USD"));
         converter.setRate(BigDecimal.valueOf(5.0));
 
-        Money converted = converter.convertFromBTCToFiat(CurrencyConverter.NUMBER_OF_SATOSHI_IN_ONE_BITCOIN);   // 1 dogecoin
+        Money converted = converter.convertFromBTCToFiat(Coin.COIN);   // 1 dogecoin
         
         assertNotNull(converted);
         assertEquals("Wrong currency", "USD", converted.getCurrencyUnit().getCurrencyCode());
@@ -116,21 +117,21 @@ public class CurrencyConverterTest extends TestCase {
 
         converter.initialise(controller, "GBP");
 
-        BigDecimal testBTCAmount = BigDecimal.valueOf(123456789L);
-        String result = converter.getBTCAsLocalisedString(Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, testBTCAmount));
+        Coin testBTCAmount = Coin.valueOf(123456789L);
+        String result = converter.getBTCAsLocalisedString(testBTCAmount);
         assertEquals("Wrong BTC localised value.1", "1.23456789", result);
 
         CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(result);
         assertNotNull(converterResult);
-        assertEquals(testBTCAmount, converterResult.getBtcMoney().getAmount());
+        assertEquals(testBTCAmount, converterResult.getBtcMoney());
  
-        testBTCAmount = BigDecimal.valueOf(1234567890123L);
-        result = converter.getBTCAsLocalisedString(Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, testBTCAmount));
+        testBTCAmount = Coin.valueOf(1234567890123L);
+        result = converter.getBTCAsLocalisedString(testBTCAmount);
         assertEquals("Wrong BTC localised value.2", "12,345.67890123", result);
         
         converterResult = CurrencyConverter.INSTANCE.parseToBTC(result);
         assertNotNull(converterResult);
-        assertEquals(testBTCAmount, converterResult.getBtcMoney().getAmount());
+        assertEquals(testBTCAmount, converterResult.getBtcMoney());
     }
     
     @Test 
@@ -144,21 +145,21 @@ public class CurrencyConverterTest extends TestCase {
         converter.initialise(controller, "EUR");
 
         
-        BigDecimal testBTCAmount = BigDecimal.valueOf(123456789L);
-        String result = converter.getBTCAsLocalisedString(Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, testBTCAmount));
+        Coin testBTCAmount = Coin.valueOf(123456789L);
+        String result = converter.getBTCAsLocalisedString(testBTCAmount);
         assertEquals("Wrong BTC localised value.1", "1,23456789", result);
 
         CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(result);
         assertNotNull(converterResult);
-        assertEquals(testBTCAmount, converterResult.getBtcMoney().getAmount());        
+        assertEquals(testBTCAmount, converterResult.getBtcMoney());        
         
-        testBTCAmount = BigDecimal.valueOf(1234567890123L);
-        result = converter.getBTCAsLocalisedString(Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, testBTCAmount));
+        testBTCAmount = Coin.valueOf(1234567890123L);
+        result = converter.getBTCAsLocalisedString(testBTCAmount);
         assertEquals("Wrong BTC localised value.2", "12.345,67890123", result);
         
         converterResult = CurrencyConverter.INSTANCE.parseToBTC(result);
         assertNotNull(converterResult);
-        assertEquals(testBTCAmount, converterResult.getBtcMoney().getAmount());
+        assertEquals(testBTCAmount, converterResult.getBtcMoney());
     }
     
     @Test 
@@ -171,26 +172,26 @@ public class CurrencyConverterTest extends TestCase {
 
         converter.initialise(controller, "EUR");
 
-        BigDecimal testBTCAmount = BigDecimal.valueOf(123456789L);
-        String result = converter.getBTCAsLocalisedString(Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, testBTCAmount));
+        Coin testBTCAmount = Coin.valueOf(123456789L);
+        String result = converter.getBTCAsLocalisedString(testBTCAmount);
         assertEquals("Wrong BTC localised value.1", "1,23456789", result);
 
         CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(result);
         assertNotNull(converterResult);
-        assertEquals(testBTCAmount, converterResult.getBtcMoney().getAmount());
+        assertEquals(testBTCAmount, converterResult.getBtcMoney());
         
 
-        testBTCAmount = BigDecimal.valueOf(1234567890123L);
-        result = converter.getBTCAsLocalisedString(Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, testBTCAmount));
+        testBTCAmount = Coin.valueOf(1234567890123L);
+        result = converter.getBTCAsLocalisedString(testBTCAmount);
         assertEquals("Wrong BTC localised value.2", "12\u00A0345,67890123", result);
         
         converterResult = CurrencyConverter.INSTANCE.parseToBTC(result);
         assertNotNull(converterResult);
-        assertEquals(testBTCAmount, converterResult.getBtcMoney().getAmount());
+        assertEquals(testBTCAmount, converterResult.getBtcMoney());
 
         converterResult = CurrencyConverter.INSTANCE.parseToBTC(result);
         assertNotNull(converterResult);
-        assertEquals(testBTCAmount, converterResult.getBtcMoney().getAmount());
+        assertEquals(testBTCAmount, converterResult.getBtcMoney());
     }
     
     @Test 
@@ -200,13 +201,13 @@ public class CurrencyConverterTest extends TestCase {
         final BitcoinController controller = controllers.bitcoinController;
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
-        BigDecimal testBTCAmount = BigDecimal.valueOf(123456789L);
+        Coin testBTCAmount = Coin.valueOf(123456789L);
 
         // Cycle through all the currencies, making sure they all initialise
         Map<String, String> currencyCodeToDescriptionMap = converter.getCurrencyCodeToDescriptionMap();
         for (String currencyCode : currencyCodeToDescriptionMap.keySet()) {
             converter.initialise(controller, currencyCode);     
-            String result = converter.getBTCAsLocalisedString(Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, testBTCAmount));
+            String result = converter.getBTCAsLocalisedString(testBTCAmount);
             CurrencyConverterResult currencyConverterResult = converter.convertFromFiatToBTC("1.0");
         }
     }

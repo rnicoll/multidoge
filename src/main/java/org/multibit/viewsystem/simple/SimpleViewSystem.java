@@ -2,6 +2,7 @@ package org.multibit.viewsystem.simple;
 
 import java.math.BigInteger;
 import java.util.List;
+import org.bitcoinj.core.Coin;
 
 import org.multibit.model.bitcoin.WalletData;
 import org.multibit.model.core.StatusEnum;
@@ -11,6 +12,7 @@ import org.multibit.viewsystem.ViewSystem;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.Wallet;
+import org.bitcoinj.script.Script;
 import org.multibit.viewsystem.View;
 
 /**
@@ -30,12 +32,12 @@ public class SimpleViewSystem implements ViewSystem {
     }
 
     @Override
-    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger arg2, BigInteger arg3) {
+    public void onCoinsReceived(Wallet wallet, Transaction transaction, Coin arg2, Coin arg3) {
         System.out.println("SIMPLE. Wallet " + wallet.hashCode() + " received transaction:\n" + transaction.toString());
     }
 
     @Override
-    public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger arg2, BigInteger arg3) {
+    public void onCoinsSent(Wallet wallet, Transaction transaction, Coin arg2, Coin arg3) {
         System.out.println("SIMPLE. Wallet " + wallet.hashCode() + " send transaction:\n" + transaction.toString());
     }
 
@@ -101,6 +103,11 @@ public class SimpleViewSystem implements ViewSystem {
     }
 
     @Override
-    public void onKeysAdded(Wallet wallet, List<ECKey> keys) { 
+    public void onKeysAdded(List<ECKey> keys) { 
+    }
+
+    @Override
+    public void onScriptsChanged(Wallet wallet, List<Script> scripts, boolean isAddingScripts) {
+        
     }
 }

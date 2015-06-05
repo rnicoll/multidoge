@@ -63,6 +63,7 @@ import java.math.BigDecimal;
 import java.text.Collator;
 import java.util.*;
 import java.util.List;
+import org.bitcoinj.core.Coin;
 
 
 /**
@@ -104,7 +105,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
     protected MultiBitLabel amountEqualsLabel;
     protected MultiBitLabel amountUnitFiatLabel;
     
-    protected Money parsedAmountBTC = null;
+    protected Coin parsedAmountBTC = null;
     protected Money parsedAmountFiat = null;
     protected JLabel notificationLabel;
 
@@ -774,8 +775,8 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                         labelTextArea.setText(rowData.getLabel());
 
                         String amountForQRCode = "";
-                        if (parsedAmountBTC != null && parsedAmountBTC.getAmount() != null) {
-                            amountForQRCode = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false, false);
+                        if (parsedAmountBTC != null) {
+                            amountForQRCode = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC, false, false);
                         }
                         displayQRCode(rowData.getAddress(), amountForQRCode, labelTextArea.getText());
                     }
@@ -930,7 +931,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         if (amountBTCTextField != null) {
             CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCTextField.getText());
             if (converterResult.isBtcMoneyValid()) {
-                amount = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false, false);
+                amount = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC, false, false);
             }
         }
         String label = "";
@@ -1352,7 +1353,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                 
                 if (converterResult.isBtcMoneyValid()) {
                     parsedAmountBTC = converterResult.getBtcMoney();
-                    amount = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false, false);
+                    amount = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC, false, false);
                     if (notificationLabel != null) {
                         notificationLabel.setText("");
                     }
@@ -1416,7 +1417,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                 
                 if (converterResult.isBtcMoneyValid()) {
                     parsedAmountBTC = converterResult.getBtcMoney();
-                    amount = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false, false);
+                    amount = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC, false, false);
                     if (notificationLabel != null) {
                         notificationLabel.setText("");
                     }
@@ -1476,7 +1477,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
             try {
                 if (parsedAmountBTC != null) {
-                    parsedAmountFiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(parsedAmountBTC.getAmount().toBigInteger());
+                    parsedAmountFiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(parsedAmountBTC);
                     String fiatText = CurrencyConverter.INSTANCE.getFiatAsLocalisedString(parsedAmountFiat, false, false);
                     if (amountFiatTextField != null) {
                         amountFiatTextField.setText(fiatText);
@@ -1496,7 +1497,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
         CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.convertFromFiatToBTC(amountFiat);
         if (converterResult.isFiatMoneyValid() && converterResult.isBtcMoneyValid()) {
             parsedAmountBTC = converterResult.getBtcMoney();
-            String amountBTCAsString = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false,
+            String amountBTCAsString = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC, false,
                     false);
             bitcoinController.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAmountConstant(), amountBTCAsString);
             bitcoinController.getModel().getActivePerWalletModelData().setDirty(true);
@@ -1629,7 +1630,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
                 
                 if (converterResult.isBtcMoneyValid()) {
                     parsedAmountBTC = converterResult.getBtcMoney();
-                    amountString = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false, false);
+                    amountString = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC, false, false);
                     amountStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(parsedAmountBTC);
                 } else {
                     parsedAmountBTC = null;
@@ -1640,7 +1641,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             }
             if (bitcoinURI.getAmount() != null) {
                 amountString = controller.getLocaliser().bitcoinValueToStringNotLocalised(bitcoinURI.getAmount(), false, false);
-                parsedAmountBTC = Money.of(CurrencyConverter.INSTANCE.BITCOIN_CURRENCY_UNIT, new BigDecimal(bitcoinURI.getAmount()));
+                parsedAmountBTC = bitcoinURI.getAmount();
                 amountStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(parsedAmountBTC);
             }
             log.debug("AbstractTradePanel - ping 4");
@@ -1736,7 +1737,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             
             if (converterResult.isBtcMoneyValid()) {
                 parsedAmountBTC = converterResult.getBtcMoney();
-                amount = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false, false);
+                amount = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC, false, false);
             }
         }
         displayQRCode(address, amount, labelTextArea.getText());
@@ -1864,7 +1865,7 @@ public abstract class AbstractTradePanel extends JPanel implements Viewable, Cop
             CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCTextField.getText());
             
             if (converterResult.isBtcMoneyValid()) {
-                amount = controller.getLocaliser().bitcoinValueToStringNotLocalised(converterResult.getBtcMoney().getAmount().toBigInteger(), false, false);
+                amount = controller.getLocaliser().bitcoinValueToStringNotLocalised(converterResult.getBtcMoney(), false, false);
             }
         }
        return amount;
