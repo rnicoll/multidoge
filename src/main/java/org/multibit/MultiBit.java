@@ -15,8 +15,8 @@
  */
 package org.multibit;
 
-import com.google.dogecoin.core.StoredBlock;
-import com.google.dogecoin.core.Wallet;
+import org.bitcoinj.core.StoredBlock;
+import org.bitcoinj.core.Wallet;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.controller.core.CoreController;

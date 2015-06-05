@@ -16,7 +16,7 @@
 
 package org.multibit.viewsystem.swing.view.walletlist;
 
-import com.google.dogecoin.core.DownloadListener;
+import org.bitcoinj.core.DownloadListener;
 import org.multibit.controller.Controller;
 import org.multibit.controller.bitcoin.BitcoinController;
 import org.multibit.message.Message;

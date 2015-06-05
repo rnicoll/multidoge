@@ -30,7 +30,7 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 
-import com.google.dogecoin.core.Wallet.SendRequest;
+import org.bitcoinj.core.Wallet.SendRequest;
 
 /**
  * The send dogecoin confirm dialog.
